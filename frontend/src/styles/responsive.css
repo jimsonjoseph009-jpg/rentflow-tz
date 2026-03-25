@@ -1,0 +1,147 @@
+/* Mobile Responsive Styles */
+
+/* Tablets and smaller screens */
+@media (max-width: 768px) {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  nav {
+    flex-direction: column;
+    gap: 10px !important;
+  }
+
+  nav > div:last-child {
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+  }
+
+  nav a,
+  nav button {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  h1, h2 {
+    font-size: 24px !important;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  table th,
+  table td {
+    padding: 10px !important;
+  }
+
+  /* Avoid overriding rf buttons (stream-layout). */
+  button:not(.rf-btn):not(.rf-action-btn) {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    padding: 10px !important;
+  }
+
+  /* Legacy rule removed: it was too aggressive and broke modern layouts.
+     Prefer explicit responsive grids in stream-layout.css. */
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  h1, h2 {
+    font-size: 20px !important;
+  }
+
+  /* Avoid overriding rf buttons (stream-layout). */
+  button:not(.rf-btn):not(.rf-action-btn) {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Avoid overriding navbar search input. */
+  input:not(.rf-search),
+  select,
+  textarea {
+    font-size: 16px !important;
+    width: 100% !important;
+    padding: 10px !important;
+  }
+
+  table {
+    font-size: 11px;
+  }
+
+  table th,
+  table td {
+    padding: 8px !important;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .action-buttons button {
+    width: 100% !important;
+    padding: 6px !important;
+  }
+
+  nav {
+    padding: 10px !important;
+  }
+
+  nav > div:last-child {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  nav a,
+  nav button {
+    width: 100% !important;
+    text-align: center;
+    padding: 8px !important;
+  }
+
+  [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modal responsive */
+  [style*="maxWidth: 400px"] {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+}
+
+/* Landscape mode for phones */
+@media (max-height: 600px) and (orientation: landscape) {
+  nav {
+    padding: 8px !important;
+  }
+
+  h2 {
+    margin-bottom: 10px !important;
+  }
+
+  [style*="max-width: 1200px"] {
+    padding: 8px !important;
+  }
+}

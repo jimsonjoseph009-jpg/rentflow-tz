@@ -1,0 +1,19 @@
+# dependencies
+**/node_modules/
+
+# production builds
+**/build/
+**/dist/
+
+# local env (keep examples)
+**/.env
+**/.env.*
+!**/.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS/editor
+.DS_Store

@@ -1,0 +1,283 @@
+:root {
+  --app-bg: #f5f6fa;
+  --app-text: #333;
+  --app-surface: #ffffff;
+  --app-surface-2: #f5f5f5;
+  --app-border: #ddd;
+  --app-input-bg: #ffffff;
+
+  /* Global design tokens (app-wide). */
+  --app-font: "Space Grotesk", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --app-radius-sm: 10px;
+  --app-radius-md: 14px;
+  --app-radius-lg: 18px;
+  --app-shadow-sm: 0 10px 30px rgba(15, 76, 201, 0.10);
+  --app-shadow-md: 0 16px 46px rgba(2, 8, 20, 0.18);
+  --app-ring: 0 0 0 4px rgba(14, 165, 164, 0.22);
+  --app-primary: #0f4cc9;
+  --app-accent: #0ea5a4;
+
+  /* Map to "rf" tokens used across stream-layout.css. */
+  --rf-font: var(--app-font);
+  --rf-bg: var(--app-bg);
+  --rf-text: var(--app-text);
+  --rf-surface: var(--app-surface);
+  --rf-surface-soft: var(--app-surface-2);
+  --rf-muted: #5a6783;
+  --rf-primary: var(--app-primary);
+  --rf-primary-soft: #d9e6ff;
+  --rf-accent: var(--app-accent);
+  --rf-danger: #dc2626;
+  --rf-shell-bg: radial-gradient(circle at 15% 10%, #d9e6ff 0%, #eef3fb 38%, #f7faff 100%);
+}
+
+html[data-theme='dark'] {
+  --app-bg: #111827;
+  --app-text: #e5e7eb;
+  --app-surface: #1f2937;
+  --app-surface-2: #243145;
+  --app-border: #3b4b63;
+  --app-input-bg: #172033;
+
+  --rf-muted: #a7b4cc;
+  --rf-primary-soft: rgba(15, 76, 201, 0.18);
+  --rf-shell-bg: radial-gradient(circle at 15% 10%, rgba(15, 76, 201, 0.22) 0%, rgba(17, 24, 39, 1) 55%, rgba(2, 6, 23, 1) 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--app-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Better defaults across the whole app (forms, tables, focus, selection). */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::selection {
+  background: rgba(14, 165, 164, 0.22);
+}
+
+:where(button, input, select, textarea) {
+  font: inherit;
+}
+
+:where(input, select, textarea):focus-visible,
+:where(button):focus-visible,
+:where(a):focus-visible {
+  outline: none;
+  box-shadow: var(--app-ring);
+  border-radius: 10px;
+}
+
+/* Only style non-stream-layout buttons so existing rf buttons stay as-is. */
+button:not(.rf-btn):not(.rf-action-btn) {
+  background: linear-gradient(120deg, var(--app-primary), var(--app-accent));
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+  box-shadow: var(--app-shadow-sm);
+}
+
+button:not(.rf-btn):not(.rf-action-btn):hover {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow: var(--app-shadow-md);
+}
+
+button:not(.rf-btn):not(.rf-action-btn):active {
+  transform: translateY(0px) scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Inputs: avoid overriding the navbar search input. */
+input:not(.rf-search):not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  width: 100%;
+  background: var(--app-input-bg);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  padding: 10px 12px;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+input:not(.rf-search):not([type='checkbox']):not([type='radio']):hover,
+select:hover,
+textarea:hover {
+  border-color: rgba(15, 76, 201, 0.5);
+}
+
+input:not(.rf-search):not([type='checkbox']):not([type='radio']):focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(14, 165, 164, 0.7);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  overflow: hidden;
+}
+
+thead th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: rgba(90, 103, 131, 0.92);
+  background: linear-gradient(180deg, rgba(15, 76, 201, 0.08), rgba(15, 76, 201, 0));
+  border-bottom: 1px solid var(--app-border);
+  padding: 12px 14px;
+}
+
+tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(221, 231, 247, 0.7);
+}
+
+tbody tr:hover {
+  background: rgba(14, 165, 164, 0.06);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--app-border);
+}
+
+/* Make legacy inline-light styles react to dark theme, including browser-serialized rgb values. */
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: #f5f5f5"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:#f5f5f5"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: #f5f5f5"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:#f5f5f5"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(245, 245, 245)"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: #f7f9fc"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:#f7f9fc"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: #f7f9fc"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:#f7f9fc"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(247, 249, 252)"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: #f5f7fb"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:#f5f7fb"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: #f5f7fb"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:#f5f7fb"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(245, 247, 251)"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: #fff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:#fff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: #fff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:#fff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: #ffffff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:#ffffff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: #ffffff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:#ffffff"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background: white"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background:white"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color: white"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="background-color:white"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(255, 255, 255)"] {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="border-color: #ddd"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="border-color:#ddd"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="border-bottom: 1px solid #eee"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="border-bottom: 2px solid #ddd"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(221, 221, 221)"],
+html[data-theme='dark'] :is(div, section, article, aside, main, form, table, thead, tbody, tr, th, td)[style*="rgb(238, 238, 238)"] {
+  border-color: var(--app-border) !important;
+}
+
+html[data-theme='dark'] th[style],
+html[data-theme='dark'] td[style],
+html[data-theme='dark'] p[style],
+html[data-theme='dark'] h1[style],
+html[data-theme='dark'] h2[style],
+html[data-theme='dark'] h3[style],
+html[data-theme='dark'] h4[style],
+html[data-theme='dark'] span[style],
+html[data-theme='dark'] small[style],
+html[data-theme='dark'] label[style],
+html[data-theme='dark'] strong[style],
+html[data-theme='dark'] a[style] {
+  color: var(--app-text) !important;
+}
+
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color: #333"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color:#333"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color: #666"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color:#666"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color: #999"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="color:#999"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="rgb(51, 51, 51)"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="rgb(102, 102, 102)"],
+html[data-theme='dark'] :is(p, h1, h2, h3, h4, h5, span, small, label, strong, div, td, th)[style*="rgb(153, 153, 153)"] {
+  color: var(--app-text) !important;
+}
+
+html[data-theme='dark'] input[style],
+html[data-theme='dark'] select[style],
+html[data-theme='dark'] textarea[style] {
+  background: var(--app-input-bg) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+html[data-theme='dark'] [style*="box-shadow"] {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* RentFlow Brand Marquee */
+.rf-marquee-container {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 110px;
+  vertical-align: bottom;
+}
+
+.rf-marquee-text {
+  display: inline-block;
+  animation: rf-marquee-walk 6s linear infinite;
+  padding-left: 100%;
+  will-change: transform;
+}
+
+@keyframes rf-marquee-walk {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}

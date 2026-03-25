@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="140" viewBox="0 0 560 140" role="img" aria-label="RentFlow-TZ">
+  <defs>
+    <linearGradient id="rfz_sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f4cc9"/>
+      <stop offset="0.55" stop-color="#1064cc"/>
+      <stop offset="1" stop-color="#0ea5a4"/>
+    </linearGradient>
+    <linearGradient id="rfz_green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#84cc16"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="rfz_build" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6fb3ff"/>
+      <stop offset="1" stop-color="#1e5ed6"/>
+    </linearGradient>
+    <filter id="rfz_shadow" x="-20%" y="-40%" width="140%" height="200%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Compact mark for navbar: icon + wordmark. No background. -->
+  <g transform="translate(14 14)" filter="url(#rfz_shadow)">
+    <!-- Building -->
+    <path d="M122 22 L154 10 L154 92 L122 92 Z" fill="url(#rfz_build)"/>
+    <path d="M154 10 L184 24 L184 92 L154 92 Z" fill="#0b3aa1" opacity="0.95"/>
+    <rect x="160" y="38" width="8" height="14" rx="2" fill="#eaf1ff" opacity="0.95"/>
+    <rect x="172" y="44" width="8" height="18" rx="2" fill="#eaf1ff" opacity="0.95"/>
+    <rect x="160" y="60" width="8" height="12" rx="2" fill="#eaf1ff" opacity="0.9"/>
+
+    <!-- House roof -->
+    <path d="M34 50 L78 18 L122 50 L112 60 L78 34 L44 60 Z" fill="url(#rfz_green)"/>
+    <!-- House body -->
+    <path d="M52 58 L52 92 L104 92 L104 58 L78 38 Z" fill="#0f4cc9" opacity="0.12"/>
+    <path d="M52 58 L78 38 L104 58 L104 92 L52 92 Z" fill="#0b6f67" opacity="0.18"/>
+    <path d="M56 60 L78 44 L100 60 L100 92 L56 92 Z" fill="#0f172a" opacity="0.12"/>
+    <path d="M56 60 L78 44 L100 60 L100 92 L56 92 Z" fill="#ffffff" opacity="0.10"/>
+    <path d="M56 60 L78 44 L100 60 L100 92 L56 92 Z" fill="url(#rfz_sky)" opacity="0.22"/>
+    <path d="M54 92 L102 92" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Window -->
+    <rect x="70" y="66" width="20" height="20" rx="4" fill="#eaf1ff" opacity="0.92"/>
+    <path d="M80 66 V86 M70 76 H90" stroke="#0f4cc9" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Wave -->
+    <path d="M28 98 C56 86, 90 112, 126 98 C152 88, 174 90, 190 94"
+          fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-opacity="0.92"/>
+    <path d="M34 106 C64 94, 96 116, 134 104 C156 98, 176 98, 196 104"
+          fill="none" stroke="#b7ffea" stroke-width="3.5" stroke-linecap="round" stroke-opacity="0.62"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(230 44)">
+    <text x="0" y="52"
+          font-family="Space Grotesk, Avenir Next, Segoe UI, system-ui, -apple-system, sans-serif"
+          font-size="56"
+          font-weight="900"
+          letter-spacing="-0.6"
+          fill="#eef4ff">RentFlow</text>
+    <text x="274" y="52"
+          font-family="Space Grotesk, Avenir Next, Segoe UI, system-ui, -apple-system, sans-serif"
+          font-size="56"
+          font-weight="900"
+          letter-spacing="-0.6"
+          fill="url(#rfz_green)">-TZ</text>
+  </g>
+</svg>
+
