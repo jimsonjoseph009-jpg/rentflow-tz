@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import axios from '../utils/axiosConfig';
 import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
