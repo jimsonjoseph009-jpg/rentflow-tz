@@ -65,22 +65,9 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-app.get('/api/health', async (_req, res) => {
-  let dbStatus = 'disconnected';
-  let dbError = null;
-  try {
-    const pool = require('./config/db');
-    await pool.query('SELECT 1');
-    dbStatus = 'connected';
-  } catch (err) {
-    dbStatus = 'error';
-    dbError = err.message;
-  }
-
+app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    database: dbStatus,
-    db_error: dbError,
     service: 'rentflow-backend',
     timestamp: new Date().toISOString(),
   });
