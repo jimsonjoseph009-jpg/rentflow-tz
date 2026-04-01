@@ -148,7 +148,7 @@ export default function Navbar() {
         {loggedIn ? (
           <div className="rf-navbar-tools">
             <input
-              className="rf-search"
+              className="rf-search rf-hide-mobile"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -172,11 +172,11 @@ export default function Navbar() {
 
             <div className="rf-navbar-actions">
               <button className="rf-btn rf-btn-icon" onClick={() => setShowModules((prev) => !prev)} aria-label="Toggle menu">
-                <span aria-hidden="true">☰</span>
+                <span aria-hidden="true">{showModules ? '✕' : '☰'}</span>
               </button>
 
               <select
-                className="rf-btn rf-btn-select"
+                className="rf-btn rf-btn-select rf-hide-mobile"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
                 title={isSwahili ? 'Badili Lugha' : 'Change Language'}
@@ -185,7 +185,7 @@ export default function Navbar() {
                 <option value="sw">SW</option>
               </select>
 
-              <div className="rf-user-pill" title={displayName}>
+              <div className="rf-user-pill rf-hide-mobile" title={displayName}>
                 <span className="rf-user-avatar" aria-hidden="true">{initials}</span>
                 <span className="rf-user-meta">
                   <strong>{displayName}</strong>
@@ -193,22 +193,22 @@ export default function Navbar() {
                 </span>
               </div>
 
-              <button className="rf-btn rf-btn-danger" onClick={logout}>
+              <button className="rf-btn rf-btn-danger rf-hide-mobile" onClick={logout}>
                 {isSwahili ? 'Toka' : 'Logout'}
               </button>
             </div>
           </div>
         ) : (
-          <>
+          <div className="rf-navbar-actions">
             <Link className="rf-btn" to="/login">{isSwahili ? 'Ingia' : 'Login'}</Link>
-            <Link className="rf-btn" to="/register">{isSwahili ? 'Jisajili' : 'Register'}</Link>
-          </>
+            <Link className="rf-btn rf-btn-primary" to="/register">{isSwahili ? 'Jisajili' : 'Register'}</Link>
+          </div>
         )}
       </div>
 
       {loggedIn ? (
         <>
-          <div className="rf-links-row">
+          <div className="rf-links-row rf-hide-mobile">
             {quickLinks.map((item) => (
               <Link
                 key={item.path}
@@ -222,7 +222,38 @@ export default function Navbar() {
           </div>
 
           {showModules ? (
-            <div className="rf-module-panel">
+            <div className="rf-module-panel rf-reveal">
+              <div className="rf-mobile-drawer-header rf-show-mobile">
+                <div className="rf-user-pill compact">
+                  <span className="rf-user-avatar">{initials}</span>
+                  <div className="rf-user-meta">
+                    <strong>{displayName}</strong>
+                    <small>{role === 'tenant' ? 'Tenant' : 'Landlord'}</small>
+                  </div>
+                </div>
+                
+                <div className="rf-drawer-actions">
+                  <select
+                    className="rf-btn rf-btn-select"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                  >
+                    <option value="en">English</option>
+                    <option value="sw">Kiswahili</option>
+                  </select>
+                  <button className="rf-btn rf-btn-danger" onClick={logout}>
+                    {isSwahili ? 'Toka' : 'Logout'}
+                  </button>
+                </div>
+
+                <input
+                  className="rf-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={isSwahili ? 'Tafuta...' : 'Search...'}
+                />
+              </div>
+
               <div className="rf-module-grid">
                 {filteredLinks.map((item) => (
                   <Link key={item.path} to={item.path} className="rf-module-link" onClick={() => setShowModules(false)}>
@@ -235,5 +266,6 @@ export default function Navbar() {
         </>
       ) : null}
     </header>
+
   );
 }

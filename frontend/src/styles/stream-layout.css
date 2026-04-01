@@ -2545,3 +2545,108 @@ html[data-theme='dark'] .rf-chat-messages {
   border-radius: 12px;
   margin-bottom: 8px;
 }
+
+/* Mobile Responsive Overrides */
+.rf-show-mobile { display: none !important; }
+
+@media (max-width: 768px) {
+  .rf-hide-mobile { display: none !important; }
+  .rf-show-mobile { 
+     display: block !important; 
+     visibility: visible !important;
+  }
+  .rf-show-mobile.flex { display: flex !important; }
+
+  .rf-navbar-row {
+    padding: 10px 14px;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .rf-navbar-tools {
+    flex: initial;
+    min-width: 0;
+  }
+
+  .rf-brand {
+    min-width: 0;
+    flex: 1;
+    gap: 8px;
+  }
+
+  .rf-brand-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .rf-brand-copy strong {
+    font-size: 15px;
+  }
+
+  .rf-brand-copy small {
+    font-size: 9px;
+  }
+
+  .rf-module-panel {
+    position: fixed;
+    top: 64px; /* Height of mobile navbar */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: calc(100vh - 64px);
+    border-radius: 0;
+    margin: 0;
+    z-index: 1100;
+    overflow-y: auto;
+    padding: 20px 16px 40px;
+    background: #080c18;
+  }
+
+  .rf-mobile-drawer-header {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(112, 133, 178, 0.16);
+    display: grid;
+    gap: 16px;
+  }
+
+  .rf-drawer-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .rf-drawer-actions .rf-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .rf-user-pill.compact {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(120, 243, 225, 0.2);
+    width: 100%;
+    height: 54px;
+  }
+
+  .rf-user-pill.compact .rf-user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .rf-search {
+    width: 100%;
+    height: 46px;
+  }
+
+  .rf-module-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rf-module-link {
+    padding: 14px;
+    font-size: 15px;
+  }
+}
