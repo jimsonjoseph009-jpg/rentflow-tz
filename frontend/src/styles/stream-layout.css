@@ -2650,3 +2650,143 @@ html[data-theme='dark'] .rf-chat-messages {
     font-size: 15px;
   }
 }
+
+/* Premium Mobile Enhancements */
+.rf-glass-glow {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(120, 243, 225, 0.15) !important;
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2), 
+              0 0 12px 0 rgba(120, 243, 225, 0.05) !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rf-glass-glow:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 20px 0 rgba(120, 243, 225, 0.15) !important;
+}
+
+/* Bottom Nav */
+.rf-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(8, 12, 24, 0.85);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(112, 133, 178, 0.14);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px 12px;
+  z-index: 2000;
+}
+
+.rf-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: rgba(162, 183, 228, 0.6);
+  gap: 4px;
+  transition: all 0.3s;
+  min-width: 60px;
+}
+
+.rf-bottom-nav-icon {
+  font-size: 20px;
+}
+
+.rf-bottom-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rf-bottom-nav-item.active {
+  color: #78f3e1;
+  text-shadow: 0 0 10px rgba(120, 243, 225, 0.4);
+}
+
+.rf-bottom-nav-item.active .rf-bottom-nav-icon {
+  transform: translateY(-2px);
+}
+
+/* KPI Carousel */
+@media (max-width: 768px) {
+  .rf-kpi-carousel-wrapper {
+    margin: 0 -16px 24px;
+    padding: 4px 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .rf-kpi-carousel-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rf-kpi-carousel-wrapper .rf-neo-kpi-grid {
+    display: flex !important;
+    gap: 12px;
+    width: max-content;
+    grid-template-columns: none !important;
+  }
+
+  .rf-kpi-carousel-wrapper .rf-neo-kpi-card {
+    width: 220px;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    margin-bottom: 0;
+  }
+
+  /* Activity Cards */
+  .rf-mobile-activity-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .rf-mobile-card-row {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .rf-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .rf-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .rf-card-stat small {
+    display: block;
+    color: rgba(162, 183, 228, 0.6);
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .rf-card-stat span {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .rf-card-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    color: rgba(162, 183, 228, 0.4);
+  }
+
+  .rf-text-bright {
+    color: #78f3e1;
+  }
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../utils/axiosConfig';
 import Navbar from '../components/Navbar';
+import BottomNav from '../components/BottomNav';
 import '../styles/stream-layout.css';
 
 const safeArray = (value) => (Array.isArray(value) ? value : []);
@@ -443,15 +444,17 @@ export default function Dashboard() {
                   ) : null}
                 </section>
 
-                <section className="rf-neo-kpi-grid">
-                  {kpis.map((item) => (
-                    <article key={item.title} className={`rf-neo-kpi-card rf-neo-kpi-${item.tone}`}>
-                      <p>{item.title}</p>
-                      <h2>{item.value}</h2>
-                      <span>{item.delta}</span>
-                    </article>
-                  ))}
-                </section>
+                <div className="rf-kpi-carousel-wrapper">
+                  <section className="rf-neo-kpi-grid">
+                    {kpis.map((item) => (
+                      <article key={item.title} className={`rf-neo-kpi-card rf-neo-kpi-${item.tone} rf-glass-glow`}>
+                        <p>{item.title}</p>
+                        <h2>{item.value}</h2>
+                        <span>{item.delta}</span>
+                      </article>
+                    ))}
+                  </section>
+                </div>
 
                 <section className="rf-neo-analytics-grid">
                   <article className="rf-neo-panel">
@@ -603,7 +606,7 @@ export default function Dashboard() {
                     <Link className="rf-neo-ghost-link" to="/payments">Open Payments</Link>
                   </div>
 
-                  <div className="rf-neo-table-wrap">
+                  <div className="rf-neo-table-wrap rf-hide-mobile">
                     <table className="rf-neo-table">
                       <thead>
                         <tr>
@@ -633,9 +636,35 @@ export default function Dashboard() {
                       </tbody>
                     </table>
                   </div>
+
+                  <div className="rf-mobile-activity-list rf-show-mobile">
+                    {activityRows.map((row) => (
+                      <div key={row.id} className="rf-mobile-card-row rf-glass-glow">
+                        <div className="rf-card-head">
+                          <strong>{row.title}</strong>
+                          <span className={`rf-neo-status rf-neo-status-${String(row.status).toLowerCase()}`}>
+                            {row.status}
+                          </span>
+                        </div>
+                        <div className="rf-card-body">
+                          <div className="rf-card-stat">
+                            <small>Channel</small>
+                            <span>{row.channel}</span>
+                          </div>
+                          <div className="rf-card-stat">
+                            <small>Amount</small>
+                            <span className="rf-text-bright">{row.amount}</span>
+                          </div>
+                        </div>
+                        <div className="rf-card-footer">
+                           <small>{row.updated}</small>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </section>
 
-                <section className="rf-neo-panel" style={{ marginTop: 16 }}>
+                <section className="rf-neo-panel" style={{ marginTop: 16, marginBottom: 80 }}>
                   <div className="rf-neo-panel-head">
                     <div>
                       <h3>Contact Us (WhatsApp)</h3>
@@ -673,6 +702,7 @@ export default function Dashboard() {
           </section>
         </section>
       </main>
+      <BottomNav />
 
       {selectedMedia ? (
         <div className="rf-media-modal-backdrop" onClick={closeMediaModal}>
