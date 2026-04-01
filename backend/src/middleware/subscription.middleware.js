@@ -20,8 +20,8 @@ const getUserPlanContext = async (userId) => {
 
 const requireActiveSubscription = async (req, res, next) => {
   try {
-    // Tenants don't have subscriptions but need access to certain sub-protected features (like emergency contacts)
-    if (req.user.role === 'tenant') {
+    // Tenants and Admins don't have subscriptions but need access
+    if (req.user.role === 'tenant' || req.user.role === 'admin') {
       return next();
     }
 
@@ -45,6 +45,8 @@ const requireActiveSubscription = async (req, res, next) => {
 
 const requirePlan = (allowedPlans) => async (req, res, next) => {
   try {
+    if (req.user.role === 'admin') return next();
+
     const sub = await getUserPlanContext(req.user.id);
 
     if (!sub || !['active', 'trial'].includes(sub.status) || sub.expired) {
@@ -65,6 +67,8 @@ const requirePlan = (allowedPlans) => async (req, res, next) => {
 
 const requireFeature = (featureKey) => async (req, res, next) => {
   try {
+    if (req.user.role === 'admin') return next();
+
     const sub = await getUserPlanContext(req.user.id);
 
     if (!sub || !sub.plan_id || !['active', 'trial'].includes(sub.status) || sub.expired) {
@@ -93,6 +97,8 @@ const requireFeature = (featureKey) => async (req, res, next) => {
 
 const enforceQuotaLimit = (entityType) => async (req, res, next) => {
   try {
+    if (req.user.role === 'admin') return next();
+
     const userId = req.user.id;
     const subRes = await pool.query(
       `SELECT us.status, us.expires_at, us.plan_id

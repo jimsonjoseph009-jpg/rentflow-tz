@@ -24,7 +24,7 @@ router.post(
   requireFeature('payment_integration'),
   requireFields(['tenant_id', 'amount', 'payment_method']),
   isPositiveNumber('amount'),
-  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
+  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'halotel', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
   isPhoneLike('phone'),
   payRent
 );

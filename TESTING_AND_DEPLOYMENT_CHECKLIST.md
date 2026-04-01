@@ -4,10 +4,16 @@
 
 ### Database Setup
 - [ ] PostgreSQL installed and running
-- [ ] Database `rentflow_tz` created
+- [ ] Database created (matches `DB_NAME` in `backend/.env`, default: `rentflow`)
 - [ ] User has CREATE TABLE permissions
-- [ ] Run: `psql -U postgres -d rentflow_tz -f DATABASE_SCHEMA_15_FEATURES.sql`
-- [ ] Verify all 15 tables created successfully
+- [ ] Run core schema first: `psql -U <db_user> -d <db_name> -f DATABASE_SCHEMA_CORE.sql`
+- [ ] Then run feature schemas (idempotent):
+  - `psql -U <db_user> -d <db_name> -f backend/src/sql/saas_monetization.sql`
+  - `psql -U <db_user> -d <db_name> -f backend/src/sql/payment_integration.sql`
+  - `psql -U <db_user> -d <db_name> -f backend/src/sql/realtime_ai_workflows.sql`
+  - `psql -U <db_user> -d <db_name> -f backend/src/sql/property_discovery_features.sql`
+  - `psql -U <db_user> -d <db_name> -f DATABASE_SCHEMA_15_FEATURES.sql`
+- [ ] Verify tables created successfully
 - [ ] Verify indexes created
 - [ ] Check foreign key relationships
 
@@ -15,10 +21,10 @@
 - [ ] Node.js v14+ installed
 - [ ] npm dependencies installed: `npm install`
 - [ ] `.env` file configured with:
-  - `DATABASE_URL=postgresql://user:pass@localhost:5432/rentflow_tz`
   - `JWT_SECRET=your_secret_key`
   - `PORT=5000`
   - `NODE_ENV=development`
+  - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL` (see `backend/.env.example`)
 - [ ] All controller files present (15 files)
 - [ ] All route files present (15 files)
 - [ ] app.js updated with 15 new routes

@@ -12,6 +12,30 @@ export default function AdminMonetization() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [selectedMetric, setSelectedMetric] = useState(null);
+  const [metricDetails, setMetricDetails] = useState([]);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      if (!selectedMetric) return;
+      setDetailsLoading(true);
+      setDetailsError(null);
+      try {
+        const res = await axios.get(`/admin/monetization/details/${selectedMetric}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMetricDetails(res.data || []);
+      } catch (err) {
+        setDetailsError(err.response?.data?.message || 'Failed to fetch details');
+      } finally {
+        setDetailsLoading(false);
+      }
+    };
+    fetchDetails();
+  }, [selectedMetric, token]);
+
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -82,9 +106,34 @@ export default function AdminMonetization() {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '12px', marginBottom: '20px' }}>
               {Object.entries(data).map(([k, v]) => (
-                <div key={k} style={{ background: '#fff', borderRadius: '12px', padding: '16px' }}>
-                  <h4 style={{ marginTop: 0 }}>{k.replace(/_/g, ' ')}</h4>
-                  <p style={{ fontSize: '24px', margin: 0 }}>{Number(v).toLocaleString()}</p>
+                <div 
+                  key={k} 
+                  onClick={() => setSelectedMetric(k)}
+                  style={{ 
+                    background: '#fff', 
+                    borderRadius: '12px', 
+                    padding: '16px', 
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    color: '#333'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                  }}
+                >
+                  <h4 style={{ marginTop: 0, color: '#555', textTransform: 'capitalize' }}>{k.replace(/_/g, ' ')}</h4>
+                  <p style={{ fontSize: '24px', margin: 0, fontWeight: 'bold' }}>
+                    {k.includes('revenue') || k.includes('fees') 
+                      ? `TZS ${Number(v).toLocaleString()}` 
+                      : Number(v).toLocaleString()}
+                  </p>
+                  <small style={{ color: '#0066cc', display: 'block', marginTop: '8px' }}>View Details &rarr;</small>
                 </div>
               ))}
             </div>
@@ -162,6 +211,62 @@ export default function AdminMonetization() {
           </>
         )}
       </div>
+
+      {selectedMetric && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '20px'
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '800px',
+            maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', color: '#333'
+          }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0, textTransform: 'capitalize' }}>{selectedMetric.replace(/_/g, ' ')} Details</h2>
+              <button 
+                onClick={() => setSelectedMetric(null)}
+                style={{ background: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#666' }}
+              >
+                &times;
+              </button>
+            </div>
+            
+            <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+              {detailsLoading ? (
+                <p>Loading details...</p>
+              ) : detailsError ? (
+                <p style={{ color: '#d32f2f' }}>{detailsError}</p>
+              ) : metricDetails.length === 0 ? (
+                <p>No records found.</p>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      {Object.keys(metricDetails[0]).map(key => (
+                        <th key={key} style={{ textAlign: 'left', padding: '12px 8px', borderBottom: '2px solid #eee', background: '#fafafa', textTransform: 'capitalize' }}>
+                          {key.replace(/_/g, ' ')}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {metricDetails.map((row, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                        {Object.values(row).map((val, i) => (
+                          <td key={i} style={{ padding: '12px 8px' }}>
+                            {val === null ? '-' : String(val)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

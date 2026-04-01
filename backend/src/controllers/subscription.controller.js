@@ -1,10 +1,75 @@
 const crypto = require('crypto');
 const pool = require('../config/db');
-const { createPaymentRequest, normalizeMethod, verifyCallbackSignature } = require('../services/fastlipa.service');
+const { createPaymentRequest, normalizeMethod, verifyCallbackSignature, verifyPayment } = require('../services/fastlipa.service');
 const { resolvePlanPrice } = require('../services/planPricing.service');
 
 const intervalForCycle = (cycle) => (cycle === 'yearly' ? '1 year' : '1 month');
 const fastlipaDebug = () => process.env.FASTLIPA_DEBUG === 'true';
+const refreshThrottleMs = 7000;
+const lastRefreshByUserId = new Map();
+
+const maybeRefreshPendingSubscriptionPayment = async (userId) => {
+  const last = lastRefreshByUserId.get(userId) || 0;
+  if (Date.now() - last < refreshThrottleMs) return;
+  lastRefreshByUserId.set(userId, Date.now());
+
+  const { rows } = await pool.query(
+    `SELECT id, subscription_id, status, transaction_id, gateway_reference, created_at
+     FROM billing_history
+     WHERE user_id=$1
+       AND billing_type='subscription'
+       AND status='pending'
+       AND created_at > NOW() - INTERVAL '24 hours'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [userId]
+  );
+
+  if (!rows.length) return;
+  const bill = rows[0];
+  const ref = bill.transaction_id || bill.gateway_reference;
+  if (!ref) return;
+
+  const result = await verifyPayment(ref);
+  if (!['success', 'failed'].includes(result.status)) return;
+
+  const billingRes = await pool.query(
+    `UPDATE billing_history
+     SET status=$1,
+         transaction_id=COALESCE($2, transaction_id),
+         gateway_reference=COALESCE($3, gateway_reference)
+     WHERE id=$4
+     RETURNING *`,
+    [result.status, result.transaction_id || null, result.gateway_reference || null, bill.id]
+  );
+
+  const updatedBill = billingRes.rows[0] || null;
+  if (!updatedBill) return;
+
+  if (result.status === 'success' && updatedBill.subscription_id) {
+    await pool.query(
+      `UPDATE subscriptions
+       SET status='active',
+           starts_at=NOW(),
+           ends_at=NOW() + (CASE WHEN billing_cycle='yearly' THEN INTERVAL '1 year' ELSE INTERVAL '1 month' END)
+       WHERE id=$1`,
+      [updatedBill.subscription_id]
+    );
+
+    await pool.query(
+      `INSERT INTO user_subscriptions (user_id, plan_id, status, billing_cycle, started_at, expires_at, updated_at)
+       SELECT s.user_id, s.plan_id, 'active', s.billing_cycle, NOW(), s.ends_at, NOW()
+       FROM subscriptions s WHERE s.id=$1
+       ON CONFLICT (user_id)
+       DO UPDATE SET plan_id=EXCLUDED.plan_id, status='active', billing_cycle=EXCLUDED.billing_cycle, started_at=EXCLUDED.started_at, expires_at=EXCLUDED.expires_at, updated_at=NOW()`,
+      [updatedBill.subscription_id]
+    );
+  }
+
+  if (result.status === 'failed' && updatedBill.subscription_id) {
+    await pool.query(`UPDATE subscriptions SET status='cancelled' WHERE id=$1`, [updatedBill.subscription_id]);
+  }
+};
 
 exports.subscribe = async (req, res) => {
   const userId = req.user.id;
@@ -91,6 +156,8 @@ exports.subscribe = async (req, res) => {
       message: 'Subscription payment initiated',
       subscription_id: subscription.id,
       payment_url: payment.payment_url,
+      transaction_id: payment.transaction_id,
+      gateway_reference: payment.gateway_reference,
       amount,
     });
   } catch (error) {
@@ -101,6 +168,19 @@ exports.subscribe = async (req, res) => {
 
 exports.subscriptionStatus = async (req, res) => {
   try {
+    if (req.user.role === 'admin') {
+      return res.json({
+        status: 'active',
+        plan_code: 'enterprise',
+        plan_name: 'Admin Access',
+        is_admin: true
+      });
+    }
+
+    if (String(req.query?.refresh || '') === '1') {
+      await maybeRefreshPendingSubscriptionPayment(req.user.id);
+    }
+
     const { rows } = await pool.query(
       `SELECT us.*, p.code AS plan_code, p.name AS plan_name, p.price_monthly, p.price_yearly
        FROM user_subscriptions us

@@ -28,6 +28,9 @@ export default function Login() {
       const res = await axios.post("/auth/login", form);
 
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
 
       navigate(res.data?.user?.role === "tenant" ? "/tenant" : "/dashboard", { replace: true });
     } catch (err) {
@@ -65,6 +68,11 @@ export default function Login() {
             onChange={handleChange}
             autoComplete="current-password"
           />
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -6 }}>
+            <button type="button" className="rf-auth-linkbtn" onClick={() => navigate("/forgot-password")}>
+              Umesahau password?
+            </button>
+          </div>
           <button className="rf-btn rf-btn-primary" type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Login"}
           </button>

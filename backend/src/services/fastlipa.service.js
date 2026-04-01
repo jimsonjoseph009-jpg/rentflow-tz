@@ -3,6 +3,7 @@ const FASTLIPA_PAY_ENDPOINT = process.env.FASTLIPA_PAY_ENDPOINT || '/api/create-
 const FASTLIPA_STATUS_ENDPOINT = process.env.FASTLIPA_STATUS_ENDPOINT || '/api/status-transaction';
 const FASTLIPA_API_KEY = process.env.FASTLIPA_API_KEY;
 const FASTLIPA_DEBUG = process.env.FASTLIPA_DEBUG === 'true';
+const FASTLIPA_INCLUDE_METADATA = process.env.FASTLIPA_INCLUDE_METADATA === 'true';
 const fs = require('fs');
 
 const normalizeAmount = (value) => {
@@ -11,6 +12,25 @@ const normalizeAmount = (value) => {
     throw new Error('Invalid payment amount');
   }
   return Math.round(amount);
+};
+
+const normalizeFastlipaMsisdn = (value) => {
+  const raw = String(value || '').trim();
+  if (!raw) throw new Error('Phone number is required');
+
+  // FastLipa docs examples use local TZ format (e.g. 0695123456).
+  // Accept a few common inputs and normalize.
+  const digits = raw.replace(/[^\d+]/g, '');
+  const strippedPlus = digits.startsWith('+') ? digits.slice(1) : digits;
+
+  if (strippedPlus.startsWith('255') && strippedPlus.length === 12) {
+    return `0${strippedPlus.slice(3)}`;
+  }
+  if (strippedPlus.startsWith('0') && strippedPlus.length === 10) {
+    return strippedPlus;
+  }
+  // Fallback: keep digits as-is (some accounts may accept 2557XXXXXXXX)
+  return strippedPlus;
 };
 
 const gatewayMethodAliases = (paymentMethod) => {
@@ -46,6 +66,16 @@ const gatewayMethodAliases = (paymentMethod) => {
     };
   }
 
+  if (method === 'halotel') {
+    return {
+      payment_method: 'halotel',
+      method: 'halotel',
+      channel: 'halotel',
+      network: 'HALOTEL',
+      provider: 'HALOTEL',
+    };
+  }
+
   if (method === 'nmb_bank' || method === 'crdb_bank') {
     return {
       payment_method: method,
@@ -69,7 +99,7 @@ const appendGatewayLog = (label, content) => {
 
 const normalizeMethod = (method) => {
   const value = String(method || '').toLowerCase();
-  const allowed = ['mpesa', 'tigo_pesa', 'yas', 'airtel_money', 'nmb_bank', 'crdb_bank'];
+  const allowed = ['mpesa', 'tigo_pesa', 'yas', 'airtel_money', 'halotel', 'nmb_bank', 'crdb_bank'];
   if (!allowed.includes(value)) {
     throw new Error('Unsupported payment method');
   }
@@ -91,19 +121,19 @@ const createPaymentRequest = async ({ amount, phone, paymentMethod, externalId, 
   }
 
   const normalizedAmount = normalizeAmount(amount);
-  const methodPayload = gatewayMethodAliases(paymentMethod);
-
-  // Send explicit network/method aliases so the gateway does not have to infer
-  // the mobile-money channel differently for YAS/Tigo subscriptions.
   const payload = {
-    number: phone,
+    number: normalizeFastlipaMsisdn(phone),
     amount: normalizedAmount,
-    currency: 'TZS',
     name: customerName || 'RentFlow User',
-    external_id: externalId,
-    callback_url: callbackUrl,
-    ...methodPayload,
   };
+
+  if (FASTLIPA_INCLUDE_METADATA) {
+    const methodPayload = gatewayMethodAliases(paymentMethod);
+    payload.currency = process.env.FASTLIPA_CURRENCY || 'TZS';
+    payload.external_id = externalId;
+    payload.callback_url = callbackUrl;
+    Object.assign(payload, methodPayload);
+  }
 
   const requestUrl = new URL(FASTLIPA_PAY_ENDPOINT, FASTLIPA_BASE_URL).toString();
   if (FASTLIPA_DEBUG) {
@@ -174,12 +204,12 @@ const verifyCallbackSignature = () => {
   return true;
 };
 
-const verifyPayment = async (externalId) => {
+const verifyPayment = async (tranId) => {
   if (process.env.FASTLIPA_MOCK === 'true') {
     // In mock mode, pretend 80% succeeded and 20% are still 'pending' to see cron working
     return {
       status: Math.random() > 0.2 ? 'success' : 'pending',
-      transaction_id: `mock-verf-${externalId}-${Date.now()}`,
+      transaction_id: `mock-verf-${tranId}-${Date.now()}`,
       gateway_reference: `verify-${Date.now()}`,
     };
   }
@@ -189,7 +219,7 @@ const verifyPayment = async (externalId) => {
   }
 
   try {
-    const url = new URL(`${FASTLIPA_STATUS_ENDPOINT}?tranid=${externalId}`, FASTLIPA_BASE_URL).toString();
+    const url = new URL(`${FASTLIPA_STATUS_ENDPOINT}?tranid=${encodeURIComponent(String(tranId))}`, FASTLIPA_BASE_URL).toString();
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -211,14 +241,14 @@ const verifyPayment = async (externalId) => {
 
     const payload = data.data || data; // Handle nested or flat response
     let mappedStatus = 'pending';
-    const statusStr = String(payload.status || payload.transaction_status || '').toUpperCase();
+    const statusStr = String(payload.payment_status || payload.status || payload.transaction_status || '').toUpperCase();
     
     if (['SUCCESS', 'COMPLETED', 'SUCCESSFUL'].includes(statusStr)) mappedStatus = 'success';
     if (['FAILED', 'CANCELLED', 'CANCELED', 'DECLINED', 'ERROR'].includes(statusStr)) mappedStatus = 'failed';
 
     return {
       status: mappedStatus,
-      transaction_id: payload.tranID || payload.transaction_id || payload.txn_id || null,
+      transaction_id: payload.tranID || payload.tranid || payload.transaction_id || payload.txn_id || null,
       gateway_reference: payload.gateway_reference || payload.reference || null,
       raw: data
     };

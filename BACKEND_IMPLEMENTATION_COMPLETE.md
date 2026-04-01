@@ -68,16 +68,23 @@ backend/src/routes/
 ## 🗄️ Database Setup
 
 ### Run Schema Creation
-Execute the SQL script to create all tables:
+Execute the SQL scripts to create all required tables.
 
+1) Core schema (required by all features):
 ```bash
-psql -U postgres -d rentflow_tz -f DATABASE_SCHEMA_15_FEATURES.sql
+psql -U <db_user> -d <db_name> -f DATABASE_SCHEMA_CORE.sql
 ```
 
-Or manually run in your PostgreSQL client:
-```sql
--- Run the contents of DATABASE_SCHEMA_15_FEATURES.sql
+2) Feature schemas (idempotent):
+```bash
+psql -U <db_user> -d <db_name> -f backend/src/sql/saas_monetization.sql
+psql -U <db_user> -d <db_name> -f backend/src/sql/payment_integration.sql
+psql -U <db_user> -d <db_name> -f backend/src/sql/realtime_ai_workflows.sql
+psql -U <db_user> -d <db_name> -f backend/src/sql/property_discovery_features.sql
+psql -U <db_user> -d <db_name> -f DATABASE_SCHEMA_15_FEATURES.sql
 ```
+
+`<db_name>` should match `DB_NAME` in `backend/.env` (default in this repo: `rentflow`).
 
 ### Tables Created (15)
 1. **tenant_ratings** - Credit scores for tenants

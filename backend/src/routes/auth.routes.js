@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, logout, me, updateProfile, updateAvatar, changePassword } = require('../controllers/auth.controller');
+const { register, login, logout, me, updateProfile, updateAvatar, changePassword, forgotPassword, resetPassword } = require('../controllers/auth.controller');
 const { verifyToken } = require('../middleware/auth.middleware');
 const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
@@ -43,9 +43,30 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const forgotLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: 'Too many requests, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const forgotValidation = [
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
+  validateReq,
+];
+
+const resetValidation = [
+  body('token').notEmpty().withMessage('token is required'),
+  body('password').isLength({ min: 8 }).withMessage('Password minimum 8 characters'),
+  validateReq,
+];
+
 
 router.post('/register', registerValidation, register);
 router.post('/login', loginLimiter, loginValidation, login);
+router.post('/forgot-password', forgotLimiter, forgotValidation, forgotPassword);
+router.post('/reset-password', resetValidation, resetPassword);
 router.post('/logout', logout);
 router.get('/me', verifyToken, me);
 router.put('/profile', verifyToken, profileValidation, updateProfile);

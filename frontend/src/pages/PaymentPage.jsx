@@ -60,7 +60,7 @@ export default function PaymentPage() {
       <Navbar />
       <main className="rf-content" style={{ maxWidth: 820 }}>
         <h2 style={{ marginBottom: '16px' }}>Pay Rent</h2>
-        <p style={{ color: '#666', marginTop: 0 }}>Lipa kodi kupitia Fastlipa (M-Pesa, YAS/Tigo Pesa, Airtel Money, NMB, CRDB).</p>
+        <p style={{ color: '#666', marginTop: 0 }}>Lipa kodi kupitia Fastlipa (M-Pesa, YAS/Tigo Pesa, Airtel Money, Halotel, NMB, CRDB).</p>
 
         <form
           onSubmit={handleSubmit}
@@ -92,6 +92,7 @@ export default function PaymentPage() {
               <option value="mpesa">M-Pesa</option>
               <option value="yas">Tigo Pesa / YAS</option>
               <option value="airtel_money">Airtel Money</option>
+              <option value="halotel">Halotel Money</option>
               <option value="nmb_bank">NMB Bank</option>
               <option value="crdb_bank">CRDB Bank</option>
             </select>

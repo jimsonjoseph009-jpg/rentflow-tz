@@ -44,8 +44,10 @@ router.get('/:file', verifyToken, checkRole('landlord'), async (req, res) => {
       return res.status(404).json({ message: 'Receipt file missing' });
     }
 
+    const wantsDownload = String(req.query?.download || '') === '1';
+
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+    res.setHeader('Content-Disposition', `${wantsDownload ? 'attachment' : 'inline'}; filename="${fileName}"`);
     res.setHeader('Cache-Control', 'private, no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
 
@@ -57,4 +59,3 @@ router.get('/:file', verifyToken, checkRole('landlord'), async (req, res) => {
 });
 
 module.exports = router;
-

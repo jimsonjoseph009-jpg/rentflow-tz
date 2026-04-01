@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
+import { API_BASE } from '../config';
 import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
 import AppTable from '../components/ui/AppTable';
@@ -7,9 +8,37 @@ import '../styles/stream-layout.css';
 
 export default function PaymentHistoryPage() {
   const token = localStorage.getItem('token');
-  const backendBase = (process.env.REACT_APP_API_BASE || 'http://localhost:5000').replace(/\/api$/, '');
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState(null);
+
+  const downloadReceipt = async (payment) => {
+    if (!payment?.receipt_path) return;
+    setDownloadingId(payment.id);
+    try {
+      const url = `${API_BASE}${payment.receipt_path}?download=1`;
+      const res = await axios.get(url, { responseType: 'blob' });
+
+      const cd = res.headers?.['content-disposition'] || res.headers?.get?.('content-disposition') || '';
+      const match = /filename="?([^"]+)"?/i.exec(String(cd));
+      const fallbackName = String(payment.receipt_path).split('/').pop() || `receipt-${payment.id}.pdf`;
+      const fileName = match?.[1] || fallbackName;
+
+      const blobUrl = window.URL.createObjectURL(res.data);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Failed to download receipt', error);
+      alert(error?.response?.data?.message || 'Failed to download receipt');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -61,9 +90,15 @@ export default function PaymentHistoryPage() {
                   </td>
                   <td>
                     {payment.receipt_path ? (
-                      <a className="rf-table-link" href={`${backendBase}${payment.receipt_path}`} target="_blank" rel="noreferrer">
-                        Download
-                      </a>
+                      <button
+                        type="button"
+                        className="rf-table-link"
+                        style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+                        onClick={() => downloadReceipt(payment)}
+                        disabled={downloadingId === payment.id}
+                      >
+                        {downloadingId === payment.id ? 'Downloading…' : 'Download'}
+                      </button>
                     ) : (
                       '-'
                     )}

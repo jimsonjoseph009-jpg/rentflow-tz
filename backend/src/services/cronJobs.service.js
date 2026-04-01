@@ -18,7 +18,7 @@ const checkPendingPayments = async () => {
       if (!bill.gateway_reference && !bill.transaction_id) continue;
 
       // Use gateway_reference or transaction_id to verify
-      const ref = bill.gateway_reference || bill.transaction_id;
+      const ref = bill.transaction_id || bill.gateway_reference;
       const result = await verifyPayment(ref);
 
       if (result.status === 'success' || result.status === 'failed') {

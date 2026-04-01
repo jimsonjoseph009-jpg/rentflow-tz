@@ -8,23 +8,40 @@ import axios from '../utils/axiosConfig';
  * Otherwise they see an "Upgrade Required" screen with a link to /billing.
  */
 export default function SubscriptionGuard({ children }) {
-  const [status, setStatus] = useState(null); // 'allowed' | 'blocked' | 'loading'
+  const [status, setStatus] = useState('loading'); // 'allowed' | 'blocked' | 'loading' | 'grace'
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const loggedIn = Boolean(localStorage.getItem('user'));
 
   useEffect(() => {
-    if (!token) {
+    // The app primarily uses cookie auth (httpOnly token). Some pages also use a Bearer token in localStorage.
+    // Do not force /login when the Bearer token is missing; rely on `user` + cookie session instead.
+    if (!loggedIn) {
       navigate('/login', { replace: true });
       return;
     }
 
     let cancelled = false;
 
+    // Check role to bypass for admins
+    let role = null;
+    try {
+      const raw = localStorage.getItem('user');
+      role = raw ? JSON.parse(raw)?.role : null;
+    } catch {}
+
+    if (role === 'admin') {
+      setStatus('allowed');
+      return;
+    }
+
     const check = async () => {
       try {
-        const res = await axios.get('/subscription-status', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        setStatus('loading');
+        const res = await axios.get(
+          '/subscription-status',
+          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+        );
 
         if (cancelled) return;
 
@@ -37,15 +54,25 @@ export default function SubscriptionGuard({ children }) {
         } else {
           setStatus('blocked');
         }
-      } catch {
-        if (!cancelled) setStatus('blocked');
+      } catch (error) {
+        if (cancelled) return;
+        const httpStatus = error?.response?.status;
+        if (httpStatus === 401 || httpStatus === 403) {
+          try {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+          } catch {}
+          navigate('/login', { replace: true });
+          return;
+        }
+        setStatus('blocked');
       }
     };
 
     check();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [loggedIn, token, navigate]);
 
   if (status === 'loading' || status === null) {
     return (

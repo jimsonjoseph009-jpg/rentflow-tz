@@ -8,10 +8,9 @@ router.get('/:token', getPayLinkByToken);
 router.post(
   '/:token/initiate',
   requireFields(['payment_method']),
-  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
+  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'halotel', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
   isPhoneLike('phone'),
   initiatePayLinkPayment
 );
 
 module.exports = router;
-

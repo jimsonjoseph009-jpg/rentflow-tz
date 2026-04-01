@@ -34,6 +34,12 @@ services:
         sync: false
       - key: FASTLIPA_PAY_ENDPOINT
         sync: false
+      - key: FASTLIPA_STATUS_ENDPOINT
+        sync: false
+      - key: FASTLIPA_LIST_ENDPOINT
+        sync: false
+      - key: FASTLIPA_BALANCE_ENDPOINT
+        sync: false
       - key: FASTLIPA_API_KEY
         sync: false
       - key: FASTLIPA_SECRET
@@ -46,6 +52,8 @@ services:
         value: false
       - key: FASTLIPA_DEBUG
         sync: false
+      - key: FASTLIPA_INCLUDE_METADATA
+        value: false
       - key: SMS_PROVIDER
         sync: false
       - key: SMS_MOCK

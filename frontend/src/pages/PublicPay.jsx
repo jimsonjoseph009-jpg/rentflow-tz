@@ -106,6 +106,7 @@ export default function PublicPay() {
                     <option value="mpesa">M-Pesa</option>
                     <option value="yas">Tigo Pesa / YAS</option>
                     <option value="airtel_money">Airtel Money</option>
+                    <option value="halotel">Halotel Money</option>
                     <option value="tigo_pesa">Tigo Pesa</option>
                     <option value="nmb_bank">NMB Bank</option>
                     <option value="crdb_bank">CRDB Bank</option>

@@ -11,6 +11,7 @@ export default function Maintenance() {
   const userRaw = localStorage.getItem('user');
   const user = userRaw ? JSON.parse(userRaw) : null;
   const isTenant = user?.role === 'tenant';
+  const token = localStorage.getItem('token');
 
   const [requests, setRequests] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -91,10 +92,17 @@ export default function Maintenance() {
   };
 
   const filteredRequests = requests.filter(
-    (request) =>
-      (request.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        properties.find((property) => property.id === request.property_id)?.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (!filterStatus || request.status === filterStatus)
+    (request) => {
+      const term = String(searchTerm || '').toLowerCase();
+      const description = String(request.description || '').toLowerCase();
+      const propertyName = String(
+        properties.find((property) => property.id === request.property_id)?.name || ''
+      ).toLowerCase();
+
+      const matchesTerm = !term || description.includes(term) || propertyName.includes(term);
+      const matchesStatus = !filterStatus || request.status === filterStatus;
+      return matchesTerm && matchesStatus;
+    }
   );
 
   const getPropertyName = (id) => properties.find((property) => property.id === id)?.name || 'Unknown';

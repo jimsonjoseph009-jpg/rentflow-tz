@@ -7,6 +7,15 @@ const API = axios.create({
 
 API.interceptors.request.use((config) => {
   config.withCredentials = true;
+  // Prefer cookie auth, but attach Bearer token when present for deployments where cookies don't work cross-site.
+  try {
+    if (!config.headers?.Authorization) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+  } catch {}
   return config;
 });
 

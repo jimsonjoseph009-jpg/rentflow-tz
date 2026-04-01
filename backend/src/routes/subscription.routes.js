@@ -17,7 +17,7 @@ router.post(
   requireFields(['plan_code', 'payment_method']),
   oneOf('plan_code', ['starter', 'pro', 'enterprise']),
   oneOf('billing_cycle', ['monthly', 'yearly']),
-  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
+  oneOf('payment_method', ['mpesa', 'yas', 'airtel_money', 'halotel', 'nmb_bank', 'crdb_bank', 'tigo_pesa']),
   isPhoneLike('phone'),
   subscribe
 );
@@ -28,4 +28,3 @@ router.post('/cancel', verifyToken, cancelSubscription);
 router.post('/callback', subscriptionCallback);
 
 module.exports = router;
-

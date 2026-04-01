@@ -8,6 +8,7 @@ const PAYMENT_METHODS = [
   { value: 'mpesa', label: 'M-Pesa', icon: '📱' },
   { value: 'yas', label: 'Tigo Pesa / YAS', icon: '📶' },
   { value: 'airtel_money', label: 'Airtel Money', icon: '🔴' },
+  { value: 'halotel', label: 'Halotel Money', icon: '🟠' },
   { value: 'crdb_bank', label: 'CRDB Bank', icon: '🏦' },
   { value: 'nmb_bank', label: 'NMB Bank', icon: '🏛️' },
 ];
@@ -82,7 +83,9 @@ function PaymentModal({ plan, billingCycle, onClose, onSuccess }) {
       if (res.data?.payment_url) {
         window.location.href = res.data.payment_url;
       } else {
-        onSuccess?.();
+        // FastLipa may trigger a push to the phone with no checkout URL.
+        // Show a pending banner and start polling.
+        window.location.href = '/billing?sub=pending';
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Subscription failed');
@@ -147,7 +150,7 @@ function PaymentModal({ plan, billingCycle, onClose, onSuccess }) {
             <input
               required
               type="tel"
-              placeholder="255712345678"
+              placeholder="0695123456"
               value={form.phone}
               onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
               style={{
@@ -243,13 +246,15 @@ export default function Billing() {
     const params = new URLSearchParams(window.location.search);
     const sub = params.get('sub');
     if (!sub) return;
-    if (!['success', 'failed'].includes(sub)) return;
+    if (!['success', 'failed', 'pending'].includes(sub)) return;
 
     setSubState({
       mode: 'processing',
       message:
         sub === 'success'
           ? 'Payment received — activating your subscription…'
+          : sub === 'pending'
+            ? 'Payment initiated — check your phone to confirm, then wait while we activate your subscription…'
           : 'Payment response received — checking final transaction status…',
     });
 
@@ -261,7 +266,7 @@ export default function Billing() {
       if (stopped) return;
       try {
         const [st, historyRes] = await Promise.all([
-          axios.get('/subscription-status', { headers }),
+          axios.get('/subscription-status?refresh=1', { headers }),
           axios.get('/subscribe/history', { headers }),
         ]);
 

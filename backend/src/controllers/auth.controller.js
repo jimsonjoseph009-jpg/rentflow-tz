@@ -1,8 +1,10 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { sendMail } = require('../services/email.service');
 
 let avatarColumnKnown = null;
 
@@ -104,6 +106,7 @@ exports.login = async (req, res) => {
     });
 
     res.json({
+      token,
       user: { id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email, role: user.rows[0].role },
     });
   } catch (err) {
@@ -290,3 +293,133 @@ exports.logout = (req, res) => {
   res.json({ message: 'Logged out successfully' });
 };
 
+const ensurePasswordResetTable = async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id SERIAL PRIMARY KEY,
+      user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      used_at TIMESTAMP NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  try {
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS password_resets_token_hash_uq ON password_resets(token_hash);`);
+  } catch (error) {
+    // Some managed DBs restrict index DDL; still functional without it (slower lookup).
+    console.warn('[auth] password_resets index skipped:', error.message);
+  }
+};
+
+const hashResetToken = (token) => {
+  return crypto.createHash('sha256').update(String(token || ''), 'utf8').digest('hex');
+};
+
+exports.forgotPassword = async (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  // Always respond with success to avoid leaking whether an email exists.
+  const genericResponse = { message: 'If that email exists, a password reset link has been sent.' };
+
+  if (!email) return res.json(genericResponse);
+
+  try {
+    await ensurePasswordResetTable();
+
+    const userRes = await pool.query(`SELECT id, email, name FROM users WHERE lower(email)=lower($1) LIMIT 1`, [email]);
+    if (!userRes.rows.length) {
+      return res.json(genericResponse);
+    }
+
+    const user = userRes.rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = hashResetToken(token);
+    const ttlMinutes = Number(process.env.PASSWORD_RESET_TTL_MINUTES || 60);
+    const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
+
+    await pool.query(
+      `INSERT INTO password_resets (user_id, token_hash, expires_at)
+       VALUES ($1,$2,$3)`,
+      [user.id, tokenHash, expiresAt]
+    );
+
+    const frontendBase = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetUrl = `${String(frontendBase).replace(/\/$/, '')}/reset-password?token=${encodeURIComponent(token)}`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5">
+        <h2>Reset your RentFlow-TZ password</h2>
+        <p>Hello ${user.name || 'there'},</p>
+        <p>We received a request to reset your password. Click the button below to set a new password.</p>
+        <p style="margin: 24px 0">
+          <a href="${resetUrl}" style="display:inline-block;padding:12px 16px;border-radius:8px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700">
+            Reset Password
+          </a>
+        </p>
+        <p>This link expires in ${ttlMinutes} minutes.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      </div>
+    `;
+
+    try {
+      await sendMail({ to: user.email, subject: 'Reset your password - RentFlow-TZ', html });
+    } catch (mailErr) {
+      console.error('[auth] forgotPassword mail failed:', mailErr.message);
+      // Still respond generic success.
+    }
+
+    return res.json(genericResponse);
+  } catch (err) {
+    console.error('[auth] forgotPassword error:', err.message);
+    return res.json(genericResponse);
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const token = String(req.body?.token || '').trim();
+  const password = String(req.body?.password || '');
+
+  if (!token) return res.status(400).json({ message: 'token is required' });
+  if (!password || password.length < 8 || !/[a-zA-Z]/.test(password) || !/\\d/.test(password)) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters long and contain both letters and numbers' });
+  }
+
+  try {
+    await ensurePasswordResetTable();
+
+    const tokenHash = hashResetToken(token);
+    const prRes = await pool.query(
+      `SELECT pr.id, pr.user_id, pr.expires_at, pr.used_at, u.email
+       FROM password_resets pr
+       JOIN users u ON u.id = pr.user_id
+       WHERE pr.token_hash=$1
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (!prRes.rows.length) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    const pr = prRes.rows[0];
+    if (pr.used_at) {
+      return res.status(400).json({ message: 'Reset token has already been used' });
+    }
+    if (new Date(pr.expires_at).getTime() < Date.now()) {
+      return res.status(400).json({ message: 'Reset token has expired' });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    await pool.query('UPDATE users SET password_hash=$1 WHERE id=$2', [hashed, pr.user_id]);
+    await pool.query('UPDATE password_resets SET used_at=NOW() WHERE id=$1', [pr.id]);
+    // Invalidate other active reset tokens for this user.
+    await pool.query('UPDATE password_resets SET used_at=NOW() WHERE user_id=$1 AND used_at IS NULL', [pr.user_id]);
+
+    return res.json({ message: 'Password reset successfully. Please login.' });
+  } catch (err) {
+    console.error('[auth] resetPassword error:', err.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

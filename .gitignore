@@ -15,5 +15,8 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
+# runtime uploads/cache
+backend/storage/
+
 # OS/editor
 .DS_Store
