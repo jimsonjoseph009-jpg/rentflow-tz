@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
+import axios from '../utils/axiosConfig';
 import '../styles/stream-layout.css';
 
 export default function Messages() {
@@ -166,9 +166,7 @@ export default function Messages() {
   const filteredThreads = useMemo(() => threads, [threads]);
 
   return (
-    <div className="rf-shell">
-      <Navbar />
-      <main className="rf-content">
+    <>
         <div className="rf-row-head" style={{ marginBottom: 12 }}>
           <h2 style={{ margin: 0 }}>Messages</h2>
           <small style={{ color: '#5a6783' }}>Landlord and tenant chat</small>
@@ -315,7 +313,6 @@ export default function Messages() {
             )}
           </section>
         </div>
-      </main>
-    </div>
+    </>
   );
 }

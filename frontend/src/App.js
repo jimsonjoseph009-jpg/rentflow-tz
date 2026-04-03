@@ -52,6 +52,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionGuard from "./components/SubscriptionGuard";
 import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider, NotificationContainer } from "./context/NotificationContext";
+import MainLayout from "./components/MainLayout";
 
 function App() {
   const isLoggedIn = Boolean(localStorage.getItem("user"));
@@ -98,7 +99,9 @@ function App() {
               path="/dashboard"
               element={
                 <LandlordOnly>
-                  <Dashboard />
+                  <MainLayout>
+                    <Dashboard />
+                  </MainLayout>
                 </LandlordOnly>
               }
             />
@@ -106,7 +109,9 @@ function App() {
               path="/tenant"
               element={
                 <TenantOnly>
-                  <TenantDashboard />
+                  <MainLayout>
+                    <TenantDashboard />
+                  </MainLayout>
                 </TenantOnly>
               }
             />
@@ -114,7 +119,9 @@ function App() {
               path="/properties"
               element={
                 <LandlordSubOnly>
-                  <Properties />
+                  <MainLayout>
+                    <Properties />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -122,7 +129,9 @@ function App() {
               path="/units"
               element={
                 <LandlordSubOnly>
-                  <Units />
+                  <MainLayout>
+                    <Units />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -130,7 +139,9 @@ function App() {
               path="/tenants"
               element={
                 <LandlordSubOnly>
-                  <Tenants />
+                  <MainLayout>
+                    <Tenants />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -138,7 +149,9 @@ function App() {
               path="/payments"
               element={
                 <LandlordSubOnly>
-                  <Payments />
+                  <MainLayout>
+                    <Payments />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -183,7 +196,9 @@ function App() {
               path="/messages"
               element={
                 <AnyAuthed>
-                  <MessagesGate />
+                  <MainLayout>
+                    <MessagesGate />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -199,7 +214,9 @@ function App() {
               path="/profile"
               element={
                 <AnyAuthed>
-                  <Profile />
+                  <MainLayout>
+                    <Profile />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -231,7 +248,9 @@ function App() {
               path="/notifications"
               element={
                 <AnyAuthed>
-                  <NotificationsPage />
+                  <MainLayout>
+                    <NotificationsPage />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />

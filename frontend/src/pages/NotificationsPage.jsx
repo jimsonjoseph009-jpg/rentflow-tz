@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
+import axios from '../utils/axiosConfig';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';
 import '../styles/stream-layout.css';
@@ -52,9 +52,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="rf-page">
-      <Navbar />
-      <div className="rf-page-content narrow">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Signals</p>
@@ -87,7 +85,9 @@ export default function NotificationsPage() {
             </AppCard>
           ))}
         </div>
-      </div>
-    </div>
+    </>
   );
 }
+
+
+

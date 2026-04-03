@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
 import AppModal from '../components/ui/AppModal';
 import '../styles/stream-layout.css';
@@ -183,9 +182,7 @@ export default function TenantDashboard() {
   }
 
   return (
-    <div className="rf-page">
-      <Navbar />
-      <main className="rf-page-content">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Tenant</p>
@@ -430,7 +427,6 @@ export default function TenantDashboard() {
             </div>
           </>
         )}
-      </main>
 
       {selectedMedia ? (
         <div className="rf-media-modal-backdrop" onClick={closeMediaModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 2000, display: 'grid', placeItems: 'center', padding: '20px' }}>
@@ -480,6 +476,8 @@ export default function TenantDashboard() {
           </div>
         </div>
       ) : null}
-    </div>
+    </>
   );
 }
+
+

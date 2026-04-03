@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
-import BottomNav from '../components/BottomNav';
 import '../styles/stream-layout.css';
 
 const safeArray = (value) => (Array.isArray(value) ? value : []);
@@ -319,10 +317,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="rf-shell rf-shell-neo">
-      <Navbar />
-      <main className="rf-content rf-neo-page">
-        <section className="rf-neo-dashboard rf-reveal" style={{ '--delay': '0ms' }}>
+    <>
+      <section className="rf-neo-dashboard rf-reveal" style={{ '--delay': '0ms' }}>
           <aside className="rf-neo-sidebar">
             <div className="rf-neo-sidebar-brand">
               <span className="rf-neo-brand-mark">RF</span>
@@ -701,9 +697,6 @@ export default function Dashboard() {
             )}
           </section>
         </section>
-      </main>
-      <BottomNav />
-
       {selectedMedia ? (
         <div className="rf-media-modal-backdrop" onClick={closeMediaModal}>
           <div className="rf-media-modal" onClick={(e) => e.stopPropagation()}>
@@ -746,6 +739,7 @@ export default function Dashboard() {
           </div>
         </div>
       ) : null}
-    </div>
+    </>
   );
 }
+

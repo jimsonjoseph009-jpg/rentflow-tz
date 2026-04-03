@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
+import axios from '../utils/axiosConfig';
 import LocationPicker from '../components/LocationPicker';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';
@@ -332,9 +332,7 @@ export default function Tenants() {
   const activeLeases = tenants.filter((tenant) => tenant.lease_end && new Date(tenant.lease_end) >= new Date()).length;
 
   return (
-    <div className="rf-page">
-      <Navbar />
-      <div className="rf-page-content">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Residents</p>
@@ -730,7 +728,7 @@ export default function Tenants() {
             </div>
           </form>
         </AppModal>
-      </div>
-    </div>
+    </>
   );
 }
+

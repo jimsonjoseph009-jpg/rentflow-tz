@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
+import axios from '../utils/axiosConfig';
 import { API_BASE } from '../config';
 import AppCard from '../components/ui/AppCard';
 import '../styles/stream-layout.css';
@@ -137,9 +137,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="rf-page">
-      <Navbar />
-      <main className="rf-page-content">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Account</p>
@@ -337,7 +335,6 @@ export default function Profile() {
             </div>
           </>
         )}
-      </main>
-    </div>
+    </>
   );
 }

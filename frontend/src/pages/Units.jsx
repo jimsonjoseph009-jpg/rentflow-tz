@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
+import axios from '../utils/axiosConfig';
 import '../styles/stream-layout.css';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';
@@ -113,10 +113,7 @@ export default function Units() {
   });
 
   return (
-    <div className="rf-page">
-      <Navbar />
-
-      <div className="rf-page-content">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Inventory</p>
@@ -240,7 +237,6 @@ export default function Units() {
               </AppTable>
           </AppCard>
         )}
-      </div>
-    </div>
+    </>
   );
 }

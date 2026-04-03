@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import axios from "../utils/axiosConfig";
-import Navbar from "./Navbar";
 import LocationPicker from "./LocationPicker";
 import '../styles/stream-layout.css';
 import { useNotification } from "../context/NotificationContext";
@@ -279,10 +278,7 @@ function Properties() {
   };
 
   return (
-    <div className="rf-page">
-      <Navbar />
-
-      <div className="rf-page-content">
+    <>
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Portfolio</p>
@@ -580,8 +576,7 @@ function Properties() {
             </AppTable>
           </AppCard>
         )}
-      </div>
-    </div>
+    </>
   );
 }
 
