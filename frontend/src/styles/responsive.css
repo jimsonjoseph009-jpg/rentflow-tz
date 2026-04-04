@@ -10,7 +10,7 @@
     font-size: 14px;
   }
 
-  nav {
+  nav:not(.rf-bottom-nav) {
     flex-direction: column;
     gap: 10px !important;
   }
@@ -102,19 +102,19 @@
     padding: 6px !important;
   }
 
-  nav {
+  nav:not(.rf-bottom-nav) {
     padding: 10px !important;
   }
 
-  nav > div:last-child {
+  nav:not(.rf-bottom-nav) > div:last-child {
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
 
-  nav a,
-  nav button {
+  nav:not(.rf-bottom-nav) a,
+  nav:not(.rf-bottom-nav) button {
     width: 100% !important;
     text-align: center;
     padding: 8px !important;

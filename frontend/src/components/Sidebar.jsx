@@ -1,41 +1,78 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
-function Sidebar({ active, setActive }) {
-  const navigate = useNavigate();
-  const menuItems = [
-    "Dashboard",
-    "Properties",
-    "Tenants",
-    "Payments",
-    "Reports",
+const getStoredRole = () => {
+  try {
+    const raw = localStorage.getItem('user');
+    if (!raw) return null;
+    return JSON.parse(raw)?.role || null;
+  } catch {
+    return null;
+  }
+};
+
+const getStoredUser = () => {
+  try {
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export default function Sidebar() {
+  const location = useLocation();
+  const { isSwahili } = useLanguage();
+  const role = getStoredRole();
+  const user = getStoredUser();
+
+  const landlordLinks = [
+    { label: isSwahili ? 'Mwanzo' : 'Dashboard', path: '/dashboard', icon: '⌘' },
+    { label: isSwahili ? 'Mali' : 'Properties', path: '/properties', icon: '▣' },
+    { label: isSwahili ? 'Wapangaji' : 'Tenants', path: '/tenants', icon: '◉' },
+    { label: isSwahili ? 'Kodi' : 'Payments', path: '/payments', icon: '◌' },
+    { label: isSwahili ? 'Uchambuzi' : 'Analytics', path: '/analytics', icon: '△' },
+    { label: isSwahili ? 'Makusanyo' : 'Collections', path: '/collections-center', icon: '◈' },
+    { label: isSwahili ? 'Wasifu' : 'Settings', path: '/profile', icon: '⚙' },
   ];
 
-  return (
-    <div className="w-64 bg-white shadow-lg p-5 min-h-screen">
-      <h2 className="text-2xl font-bold text-purple-700 mb-10" style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <span className="rf-marquee-text">RentFlow TZ</span>
-      </h2>
+  const tenantLinks = [
+    { label: isSwahili ? 'Mwanzo' : 'Home', path: '/tenant', icon: '🏁' },
+    { label: isSwahili ? 'Ujumbe' : 'Messages', path: '/messages', icon: '💬' },
+    { label: isSwahili ? 'Historia' : 'History', path: '/payment-history', icon: '🧾' },
+    { label: isSwahili ? 'Wasifu' : 'Profile', path: '/profile', icon: '👤' }
+  ];
 
-      <ul className="space-y-4">
-        {menuItems.map((item) => (
-          <li
-            key={item}
-            onClick={() => {
-              setActive(item);
-              navigate(`/${item.toLowerCase()}`);
-            }}
-            className={`cursor-pointer p-2 rounded-lg ${
-              active === item
-                ? "bg-purple-100 text-purple-700 font-semibold"
-                : "hover:text-purple-600"
-            }`}
+  const navLinks = role === 'tenant' ? tenantLinks : landlordLinks;
+
+  return (
+    <aside className="rf-neo-sidebar rf-hide-mobile">
+      <div className="rf-neo-sidebar-brand">
+        <span className="rf-neo-brand-mark">RF</span>
+        <div>
+          <strong>RentFlow TZ</strong>
+          <p>{role === 'tenant' ? (isSwahili ? 'Lango la Mpangaji' : 'Tenant Portal') : (isSwahili ? 'Usimamizi wa Kazi' : 'Portfolio OS')}</p>
+        </div>
+      </div>
+
+      <nav className="rf-neo-nav" aria-label="Sidebar navigation">
+        {navLinks.map((item) => (
+          <Link 
+            key={item.path} 
+            className={`rf-neo-nav-link ${location.pathname === item.path ? 'active' : ''}`} 
+            to={item.path}
           >
-            {item}
-          </li>
+            <span className="rf-neo-nav-icon" aria-hidden="true">{item.icon}</span>
+            <span>{item.label}</span>
+          </Link>
         ))}
-      </ul>
-    </div>
+      </nav>
+
+      <div className="rf-neo-sidebar-footer">
+        <p>{isSwahili ? 'Mtumiaji' : 'Logged In'}</p>
+        <strong>{user?.full_name || user?.name || (role === 'tenant' ? 'Tenant' : 'Landlord')}</strong>
+        <span style={{ textTransform: 'capitalize' }}>{role} Role</span>
+      </div>
+    </aside>
   );
 }
-
-export default Sidebar;

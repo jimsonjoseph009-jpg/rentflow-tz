@@ -168,15 +168,11 @@ export default function TenantDashboard() {
 
   if (!loading && error && !me) {
     return (
-      <div className="rf-page">
-        <main className="rf-page-content">
-          <AppCard className="rf-section-card rf-reveal" style={{ borderColor: '#f8d7da', background: '#fff' }}>
-             <h2 style={{ color: '#842029', marginTop: 0 }}>Dashboard Error</h2>
-             <p style={{ color: '#842029' }}>{error}</p>
-             <button className="rf-btn rf-btn-primary" onClick={() => window.location.reload()}>Refresh Page</button>
-          </AppCard>
-        </main>
-      </div>
+      <AppCard className="rf-section-card rf-reveal" style={{ borderColor: '#f8d7da', background: '#fff' }}>
+         <h2 style={{ color: '#842029', marginTop: 0 }}>Dashboard Error</h2>
+         <p style={{ color: '#842029' }}>{error}</p>
+         <button className="rf-btn rf-btn-primary" onClick={() => window.location.reload()}>Refresh Page</button>
+      </AppCard>
     );
   }
 

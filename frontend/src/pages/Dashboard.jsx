@@ -318,32 +318,6 @@ export default function Dashboard() {
 
   return (
     <>
-      <section className="rf-neo-dashboard rf-reveal" style={{ '--delay': '0ms' }}>
-          <aside className="rf-neo-sidebar">
-            <div className="rf-neo-sidebar-brand">
-              <span className="rf-neo-brand-mark">RF</span>
-              <div>
-                <strong>RentFlow TZ</strong>
-                <p>Portfolio OS</p>
-              </div>
-            </div>
-
-            <nav className="rf-neo-nav" aria-label="Dashboard shortcuts">
-              {sideLinks.map((item) => (
-                <Link key={item.to} className={`rf-neo-nav-link ${item.to === '/dashboard' ? 'active' : ''}`} to={item.to}>
-                  <span className="rf-neo-nav-icon" aria-hidden="true">{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-
-            <div className="rf-neo-sidebar-footer">
-              <p>Portfolio</p>
-              <strong>{formatNumber(totalProperties)} properties</strong>
-              <span>{formatNumber(totalUnits)} total units</span>
-            </div>
-          </aside>
-
           <section className="rf-neo-main">
             <header className="rf-neo-topbar">
               <div>
@@ -696,49 +670,48 @@ export default function Dashboard() {
               </>
             )}
           </section>
-        </section>
-      {selectedMedia ? (
-        <div className="rf-media-modal-backdrop" onClick={closeMediaModal}>
-          <div className="rf-media-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="rf-media-close" onClick={closeMediaModal}>Close</button>
+          {selectedMedia ? (
+            <div className="rf-media-modal-backdrop" onClick={closeMediaModal}>
+              <div className="rf-media-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="rf-media-close" onClick={closeMediaModal}>Close</button>
 
-            <h2 style={{ marginTop: 0, marginBottom: 8 }}>{selectedMedia.title || 'Listing Details'}</h2>
-            <p style={{ marginTop: 0, color: '#526184' }}>{selectedMedia.location || 'Tanzania'}</p>
+                <h2 style={{ marginTop: 0, marginBottom: 8 }}>{selectedMedia.title || 'Listing Details'}</h2>
+                <p style={{ marginTop: 0, color: '#526184' }}>{selectedMedia.location || 'Tanzania'}</p>
 
-            {selectedMedia.media_type === 'video' ? (
-              <video controls style={{ width: '100%', borderRadius: 12, maxHeight: 420 }}>
-                <source src={selectedMedia.media_url} />
-              </video>
-            ) : (
-              <img
-                src={selectedMedia.media_url}
-                alt={selectedMedia.title || 'Listing media'}
-                style={{ width: '100%', borderRadius: 12, maxHeight: 420, objectFit: 'cover' }}
-              />
-            )}
+                {selectedMedia.media_type === 'video' ? (
+                  <video controls style={{ width: '100%', borderRadius: 12, maxHeight: 420 }}>
+                    <source src={selectedMedia.media_url} />
+                  </video>
+                ) : (
+                  <img
+                    src={selectedMedia.media_url}
+                    alt={selectedMedia.title || 'Listing media'}
+                    style={{ width: '100%', borderRadius: 12, maxHeight: 420, objectFit: 'cover' }}
+                  />
+                )}
 
-            <div style={{ marginTop: 12 }}>
-              <p style={{ margin: '8px 0' }}><strong>Category:</strong> {selectedMedia.category || '-'}</p>
-              <p style={{ margin: '8px 0' }}><strong>Type:</strong> {selectedMedia.listing_type || '-'}</p>
-              <p style={{ margin: '8px 0' }}><strong>Price:</strong> {Number(selectedMedia.price_tzs || 0).toLocaleString()} TZS</p>
-              <p style={{ margin: '8px 0' }}><strong>Description:</strong> {selectedMedia.description || 'No description provided.'}</p>
+                <div style={{ marginTop: 12 }}>
+                  <p style={{ margin: '8px 0' }}><strong>Category:</strong> {selectedMedia.category || '-'}</p>
+                  <p style={{ margin: '8px 0' }}><strong>Type:</strong> {selectedMedia.listing_type || '-'}</p>
+                  <p style={{ margin: '8px 0' }}><strong>Price:</strong> {Number(selectedMedia.price_tzs || 0).toLocaleString()} TZS</p>
+                  <p style={{ margin: '8px 0' }}><strong>Description:</strong> {selectedMedia.description || 'No description provided.'}</p>
+                </div>
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+                  <a
+                    className="rf-btn rf-btn-primary"
+                    href={selectedMedia.media_url}
+                    download={`${(selectedMedia.title || 'listing-media').replace(/\s+/g, '-').toLowerCase()}`}
+                  >
+                    Download
+                  </a>
+                  <a className="rf-btn" href={selectedMedia.media_url} target="_blank" rel="noreferrer">
+                    Open in New Tab
+                  </a>
+                </div>
+              </div>
             </div>
-
-            <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
-              <a
-                className="rf-btn rf-btn-primary"
-                href={selectedMedia.media_url}
-                download={`${(selectedMedia.title || 'listing-media').replace(/\s+/g, '-').toLowerCase()}`}
-              >
-                Download
-              </a>
-              <a className="rf-btn" href={selectedMedia.media_url} target="_blank" rel="noreferrer">
-                Open in New Tab
-              </a>
-            </div>
-          </div>
-        </div>
-      ) : null}
+          ) : null}
     </>
   );
 }
