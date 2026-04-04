@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import axios from '../utils/axiosConfig';
 import LocationPicker from '../components/LocationPicker';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';

@@ -159,7 +159,9 @@ function App() {
               path="/marketplace"
               element={
                 <LandlordSubOnly>
-                  <Marketplace />
+                  <MainLayout>
+                    <Marketplace />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -167,7 +169,9 @@ function App() {
               path="/team-management"
               element={
                 <LandlordSubOnly>
-                  <TeamManagement />
+                  <MainLayout>
+                    <TeamManagement />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -175,7 +179,9 @@ function App() {
               path="/pay-rent"
               element={
                 <LandlordSubOnly>
-                  <PaymentPage />
+                  <MainLayout>
+                    <PaymentPage />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -183,7 +189,9 @@ function App() {
               path="/payment-history"
               element={
                 <AnyAuthed>
-                  <PaymentHistoryPage />
+                  <MainLayout>
+                    <PaymentHistoryPage />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -206,7 +214,9 @@ function App() {
               path="/analytics"
               element={
                 <LandlordSubOnly>
-                  <Analytics />
+                  <MainLayout>
+                    <Analytics />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -224,7 +234,9 @@ function App() {
               path="/financial"
               element={
                 <LandlordSubOnly>
-                  <Financial />
+                  <MainLayout>
+                    <Financial />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -232,7 +244,9 @@ function App() {
               path="/billing"
               element={
                 <LandlordOnly>
-                  <Billing />
+                  <MainLayout>
+                    <Billing />
+                  </MainLayout>
                 </LandlordOnly>
               }
             />
@@ -240,7 +254,9 @@ function App() {
               path="/admin-monetization"
               element={
                 <AdminOnly>
-                  <AdminMonetization />
+                  <MainLayout>
+                    <AdminMonetization />
+                  </MainLayout>
                 </AdminOnly>
               }
             />
@@ -258,7 +274,9 @@ function App() {
               path="/copilot"
               element={
                 <LandlordSubOnly>
-                  <CopilotPage />
+                  <MainLayout>
+                    <CopilotPage />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -266,7 +284,9 @@ function App() {
               path="/workflows"
               element={
                 <LandlordSubOnly>
-                  <WorkflowPage />
+                  <MainLayout>
+                    <WorkflowPage />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -274,7 +294,9 @@ function App() {
               path="/timeline"
               element={
                 <LandlordSubOnly>
-                  <TimelinePage />
+                  <MainLayout>
+                    <TimelinePage />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -282,7 +304,9 @@ function App() {
               path="/command-center"
               element={
                 <LandlordSubOnly>
-                  <CommandCenter />
+                  <MainLayout>
+                    <CommandCenter />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -290,7 +314,9 @@ function App() {
               path="/collections-center"
               element={
                 <LandlordSubOnly>
-                  <CollectionsCenter />
+                  <MainLayout>
+                    <CollectionsCenter />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -298,7 +324,9 @@ function App() {
               path="/maintenance"
               element={
                 <AnyAuthed>
-                  <Maintenance />
+                  <MainLayout>
+                    <Maintenance />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -306,7 +334,9 @@ function App() {
               path="/media"
               element={
                 <LandlordSubOnly>
-                  <PropertyMedia />
+                  <MainLayout>
+                    <PropertyMedia />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -314,7 +344,9 @@ function App() {
               path="/email"
               element={
                 <LandlordSubOnly>
-                  <EmailIntegration />
+                  <MainLayout>
+                    <EmailIntegration />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -322,7 +354,9 @@ function App() {
               path="/tenant-rating"
               element={
                 <LandlordSubOnly>
-                  <TenantRating />
+                  <MainLayout>
+                    <TenantRating />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -330,7 +364,9 @@ function App() {
               path="/payment-alerts"
               element={
                 <LandlordSubOnly>
-                  <PaymentAlerts />
+                  <MainLayout>
+                    <PaymentAlerts />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -338,7 +374,9 @@ function App() {
               path="/occupancy"
               element={
                 <LandlordSubOnly>
-                  <OccupancyForecast />
+                  <MainLayout>
+                    <OccupancyForecast />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -346,7 +384,9 @@ function App() {
               path="/utility-meters"
               element={
                 <LandlordSubOnly>
-                  <UtilityMeters />
+                  <MainLayout>
+                    <UtilityMeters />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -354,7 +394,9 @@ function App() {
               path="/maintenance-inventory"
               element={
                 <LandlordSubOnly>
-                  <MaintenanceInventory />
+                  <MainLayout>
+                    <MaintenanceInventory />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -362,7 +404,9 @@ function App() {
               path="/visitor-log"
               element={
                 <AnyAuthed>
-                  <VisitorLog />
+                  <MainLayout>
+                    <VisitorLog />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -370,7 +414,9 @@ function App() {
               path="/tax-deductions"
               element={
                 <LandlordSubOnly>
-                  <TaxDeductions />
+                  <MainLayout>
+                    <TaxDeductions />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -378,7 +424,9 @@ function App() {
               path="/qr-inspections"
               element={
                 <LandlordSubOnly>
-                  <QRInspections />
+                  <MainLayout>
+                    <QRInspections />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -386,7 +434,9 @@ function App() {
               path="/voice-notes"
               element={
                 <LandlordSubOnly>
-                  <VoiceNotes />
+                  <MainLayout>
+                    <VoiceNotes />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -394,7 +444,9 @@ function App() {
               path="/emergency-contacts"
               element={
                 <AnyAuthed>
-                  <EmergencyContacts />
+                  <MainLayout>
+                    <EmergencyContacts />
+                  </MainLayout>
                 </AnyAuthed>
               }
             />
@@ -402,7 +454,9 @@ function App() {
               path="/landlord-network"
               element={
                 <LandlordSubOnly>
-                  <LandlordNetwork />
+                  <MainLayout>
+                    <LandlordNetwork />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -410,7 +464,9 @@ function App() {
               path="/pet-policy"
               element={
                 <LandlordSubOnly>
-                  <PetPolicy />
+                  <MainLayout>
+                    <PetPolicy />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -418,7 +474,9 @@ function App() {
               path="/vehicle-management"
               element={
                 <LandlordSubOnly>
-                  <VehicleManagement />
+                  <MainLayout>
+                    <VehicleManagement />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -426,7 +484,9 @@ function App() {
               path="/insurance-warranty"
               element={
                 <LandlordSubOnly>
-                  <InsuranceWarranty />
+                  <MainLayout>
+                    <InsuranceWarranty />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />
@@ -434,7 +494,9 @@ function App() {
               path="/dispute-log"
               element={
                 <LandlordSubOnly>
-                  <DisputeLog />
+                  <MainLayout>
+                    <DisputeLog />
+                  </MainLayout>
                 </LandlordSubOnly>
               }
             />

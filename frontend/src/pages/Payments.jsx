@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from '../utils/axiosConfig';
-import axios from '../utils/axiosConfig';
 import '../styles/stream-layout.css';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';
@@ -268,7 +267,6 @@ export default function Payments() {
               </AppTable>
           </AppCard>
         )}
-      </div>
     </>
   );
 }

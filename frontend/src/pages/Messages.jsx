@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import axios from '../utils/axiosConfig';
 import '../styles/stream-layout.css';
 
 export default function Messages() {

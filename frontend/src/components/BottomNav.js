@@ -34,12 +34,12 @@ export default function BottomNav() {
   const navItems = role === 'tenant' ? tenantItems : landlordItems;
 
   return (
-    <nav className="rf-bottom-nav rf-show-mobile">
+    <nav className="rf-bottom-nav rf-show-mobile flex">
       {navItems.map((item) => (
         <Link 
           key={item.path} 
           to={item.path} 
-          className={`rf-bottom-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+          className={`rf-bottom-nav-item flex-1 ${location.pathname === item.path ? 'active' : ''}`}
         >
           <span className="rf-bottom-nav-icon">{item.icon}</span>
           <span className="rf-bottom-nav-label">{item.label}</span>

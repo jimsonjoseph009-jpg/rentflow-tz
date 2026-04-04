@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import axios from '../utils/axiosConfig';
 import AppCard from '../components/ui/AppCard';
 import AppToolbar from '../components/ui/AppToolbar';
 import '../styles/stream-layout.css';
