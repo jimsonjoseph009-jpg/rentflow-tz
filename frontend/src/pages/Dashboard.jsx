@@ -633,7 +633,7 @@ export default function Dashboard() {
                       <p>Register your WhatsApp number so tenants can message you directly from their portal.</p>
                     </div>
                   </div>
-                  <form onSubmit={async (e) => {
+                  <form className="rf-neo-whatsapp-form" onSubmit={async (e) => {
                     e.preventDefault();
                     setWhatsAppSaving(true);
                     const formData = new FormData(e.target);
@@ -707,4 +707,3 @@ export default function Dashboard() {
     </>
   );
 }
-

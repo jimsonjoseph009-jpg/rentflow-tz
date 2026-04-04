@@ -2577,6 +2577,14 @@ html[data-theme='dark'] .rf-chat-messages {
 .rf-show-mobile { display: none !important; }
 
 @media (max-width: 768px) {
+  .rf-shell,
+  .rf-neo-dashboard,
+  .rf-neo-main,
+  .rf-neo-panel,
+  .rf-neo-kpi-card {
+    min-width: 0;
+  }
+
   .rf-hide-mobile { display: none !important; }
   .rf-show-mobile { 
      display: block !important; 
@@ -2719,6 +2727,59 @@ html[data-theme='dark'] .rf-chat-messages {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .rf-neo-main {
+    overflow-x: clip;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .rf-neo-topbar,
+  .rf-neo-panel-head {
+    gap: 14px;
+  }
+
+  .rf-neo-topbar h1 {
+    font-size: clamp(26px, 8vw, 34px);
+  }
+
+  .rf-neo-topbar span,
+  .rf-neo-panel-head p {
+    max-width: none;
+  }
+
+  .rf-neo-top-actions {
+    width: 100%;
+  }
+
+  .rf-neo-live-badge,
+  .rf-neo-cta,
+  .rf-neo-ghost-link {
+    justify-content: center;
+  }
+
+  .rf-hero-media {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .rf-hero-media-card {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+  }
+
+  .rf-hero-media-card img,
+  .rf-hero-media-card video {
+    height: 180px;
+  }
+
+  .rf-neo-media-controls,
+  .rf-neo-media-dots {
+    display: none;
+  }
 }
 
 /* Premium Mobile Enhancements */
@@ -2796,11 +2857,9 @@ html[data-theme='dark'] .rf-chat-messages {
 /* KPI Carousel */
 @media (max-width: 768px) {
   .rf-kpi-carousel-wrapper {
-    margin: 0 -16px 24px;
-    padding: 4px 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    margin: 0 0 18px;
+    padding: 0;
+    overflow: visible;
   }
   
   .rf-kpi-carousel-wrapper::-webkit-scrollbar {
@@ -2808,16 +2867,16 @@ html[data-theme='dark'] .rf-chat-messages {
   }
 
   .rf-kpi-carousel-wrapper .rf-neo-kpi-grid {
-    display: flex !important;
-    gap: 12px;
-    width: max-content;
-    grid-template-columns: none !important;
+    display: grid !important;
+    gap: 10px;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   .rf-kpi-carousel-wrapper .rf-neo-kpi-card {
-    width: 220px;
-    flex-shrink: 0;
-    scroll-snap-align: center;
+    width: auto;
+    flex-shrink: 1;
+    scroll-snap-align: unset;
     margin-bottom: 0;
   }
 
@@ -2867,5 +2926,24 @@ html[data-theme='dark'] .rf-chat-messages {
 
   .rf-text-bright {
     color: #78f3e1;
+  }
+
+  .rf-neo-whatsapp-form {
+    flex-direction: column;
+  }
+
+  .rf-neo-whatsapp-form > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .rf-kpi-carousel-wrapper .rf-neo-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .rf-card-body {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
