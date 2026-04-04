@@ -1,22 +1,9 @@
 const pool = require('../config/db');
-
-const getUserPlanContext = async (userId) => {
-  const { rows } = await pool.query(
-    `SELECT us.status, us.expires_at, p.id AS plan_id, p.code AS plan_code
-     FROM user_subscriptions us
-     LEFT JOIN plans p ON us.plan_id = p.id
-     WHERE us.user_id=$1`,
-    [userId]
-  );
-
-  if (!rows.length) {
-    return null;
-  }
-
-  const sub = rows[0];
-  const expired = sub.expires_at && new Date(sub.expires_at) < new Date();
-  return { ...sub, expired };
-};
+const {
+  hasSubscriptionAccess,
+  resolveUserSubscription,
+  syncDerivedSubscriptionStatus,
+} = require('../services/subscriptionState.service');
 
 const requireActiveSubscription = async (req, res, next) => {
   try {
@@ -25,13 +12,15 @@ const requireActiveSubscription = async (req, res, next) => {
       return next();
     }
 
-    const sub = await getUserPlanContext(req.user.id);
+    let sub = await resolveUserSubscription(req.user.id);
 
     if (!sub) {
-      return res.status(402).json({ message: 'No subscription found' });
+      return res.status(402).json({ message: 'Subscription required' });
     }
 
-    if (!['active', 'trial'].includes(sub.status) || sub.expired) {
+    sub = await syncDerivedSubscriptionStatus(req.user.id, sub);
+
+    if (!hasSubscriptionAccess(sub)) {
       return res.status(402).json({ message: 'Subscription inactive or expired' });
     }
 
@@ -47,9 +36,15 @@ const requirePlan = (allowedPlans) => async (req, res, next) => {
   try {
     if (req.user.role === 'admin') return next();
 
-    const sub = await getUserPlanContext(req.user.id);
+    let sub = await resolveUserSubscription(req.user.id);
 
-    if (!sub || !['active', 'trial'].includes(sub.status) || sub.expired) {
+    if (!sub) {
+      return res.status(402).json({ message: 'Active subscription required' });
+    }
+
+    sub = await syncDerivedSubscriptionStatus(req.user.id, sub);
+
+    if (!hasSubscriptionAccess(sub)) {
       return res.status(402).json({ message: 'Active subscription required' });
     }
 
@@ -69,9 +64,15 @@ const requireFeature = (featureKey) => async (req, res, next) => {
   try {
     if (req.user.role === 'admin') return next();
 
-    const sub = await getUserPlanContext(req.user.id);
+    let sub = await resolveUserSubscription(req.user.id);
 
-    if (!sub || !sub.plan_id || !['active', 'trial'].includes(sub.status) || sub.expired) {
+    if (!sub) {
+      return res.status(402).json({ message: 'Active subscription required' });
+    }
+
+    sub = await syncDerivedSubscriptionStatus(req.user.id, sub);
+
+    if (!sub.plan_id || !hasSubscriptionAccess(sub)) {
       return res.status(402).json({ message: 'Active subscription required' });
     }
 
@@ -100,24 +101,11 @@ const enforceQuotaLimit = (entityType) => async (req, res, next) => {
     if (req.user.role === 'admin') return next();
 
     const userId = req.user.id;
-    const subRes = await pool.query(
-      `SELECT us.status, us.expires_at, us.plan_id
-       FROM user_subscriptions us
-       WHERE us.user_id=$1`,
-      [userId]
-    );
-
-    const activeSub = subRes.rows[0] || null;
-    let expired = activeSub?.expires_at ? new Date(activeSub.expires_at) < new Date() : false;
-    
-    // account for grace period
-    if (expired && activeSub?.expires_at) {
-      const msLeft = new Date(activeSub.expires_at).getTime() - Date.now();
-      if (Math.abs(msLeft) <= 48 * 60 * 60 * 1000) expired = false; // allow creation during grace period
-    }
+    let activeSub = await resolveUserSubscription(userId);
+    activeSub = await syncDerivedSubscriptionStatus(userId, activeSub);
 
     let quotaLimit = 10; // Default limit for trial / absent plan
-    if (activeSub && ['active', 'trial'].includes(activeSub.status) && !expired) {
+    if (activeSub && activeSub.plan_id && hasSubscriptionAccess(activeSub)) {
       const featureKey = entityType === 'properties' ? 'max_properties' : 'max_units';
       const fRes = await pool.query(
         `SELECT "limit" FROM plan_features WHERE plan_id=$1 AND feature_key=$2 LIMIT 1`,

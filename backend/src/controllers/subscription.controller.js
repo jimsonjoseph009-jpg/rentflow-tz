@@ -2,6 +2,10 @@ const crypto = require('crypto');
 const pool = require('../config/db');
 const { createPaymentRequest, normalizeMethod, verifyCallbackSignature, verifyPayment } = require('../services/fastlipa.service');
 const { resolvePlanPrice } = require('../services/planPricing.service');
+const {
+  resolveUserSubscription,
+  syncDerivedSubscriptionStatus,
+} = require('../services/subscriptionState.service');
 
 const intervalForCycle = (cycle) => (cycle === 'yearly' ? '1 year' : '1 month');
 const fastlipaDebug = () => process.env.FASTLIPA_DEBUG === 'true';
@@ -181,33 +185,16 @@ exports.subscriptionStatus = async (req, res) => {
       await maybeRefreshPendingSubscriptionPayment(req.user.id);
     }
 
-    const { rows } = await pool.query(
-      `SELECT us.*, p.code AS plan_code, p.name AS plan_name, p.price_monthly, p.price_yearly
-       FROM user_subscriptions us
-       LEFT JOIN plans p ON us.plan_id=p.id
-       WHERE us.user_id=$1`,
-      [req.user.id]
-    );
+    let sub = await resolveUserSubscription(req.user.id);
+    sub = await syncDerivedSubscriptionStatus(req.user.id, sub);
 
-    if (!rows.length) {
-      return res.json({ status: 'trial', plan_code: 'starter', plan_name: 'Starter Plan' });
-    }
-
-    const sub = rows[0];
-    
-    // Evaluate grace period for recently expired active plans
-    if (sub.status === 'active' && sub.expires_at) {
-      const msLeft = new Date(sub.expires_at).getTime() - Date.now();
-      if (msLeft < 0) {
-        const gracePeriodMs = 48 * 60 * 60 * 1000; // 48 hours
-        if (Math.abs(msLeft) <= gracePeriodMs) {
-          sub.status = 'grace_period';
-        } else {
-          sub.status = 'expired';
-          // Mark as expired in DB
-          await pool.query('UPDATE user_subscriptions SET status=$1, updated_at=NOW() WHERE user_id=$2', ['expired', req.user.id]);
-        }
-      }
+    if (!sub) {
+      return res.json({
+        status: 'inactive',
+        plan_code: null,
+        plan_name: null,
+        access_allowed: false,
+      });
     }
 
     return res.json(sub);

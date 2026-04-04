@@ -2,27 +2,21 @@ const crypto = require('crypto');
 const pool = require('../config/db');
 const { ensureOptionalTables } = require('../services/schemaBootstrap.service');
 const { createPaymentRequest, normalizeMethod } = require('../services/fastlipa.service');
-
-const isExpired = (expiresAt) => {
-  if (!expiresAt) return false;
-  return new Date(expiresAt).getTime() < Date.now();
-};
+const {
+  hasSubscriptionAccess,
+  resolveUserSubscription,
+  syncDerivedSubscriptionStatus,
+} = require('../services/subscriptionState.service');
 
 const ensureLandlordCanTakePayments = async (landlordId) => {
-  const subRes = await pool.query(
-    `SELECT us.status, us.expires_at, us.plan_id
-     FROM user_subscriptions us
-     WHERE us.user_id=$1`,
-    [landlordId]
-  );
+  let sub = await resolveUserSubscription(landlordId);
+  sub = await syncDerivedSubscriptionStatus(landlordId, sub);
 
-  if (!subRes.rows.length) {
+  if (!sub) {
     return { ok: false, status: 402, message: 'Landlord subscription required' };
   }
 
-  const sub = subRes.rows[0];
-  const expired = sub.expires_at && new Date(sub.expires_at).getTime() < Date.now();
-  if (!['active', 'trial'].includes(sub.status) || expired) {
+  if (!hasSubscriptionAccess(sub)) {
     return { ok: false, status: 402, message: 'Landlord subscription inactive or expired' };
   }
 
@@ -68,7 +62,9 @@ exports.getPayLinkByToken = async (req, res) => {
     const link = rows[0];
 
     if (link.status !== 'active') return res.status(410).json({ message: 'Pay link is no longer active' });
-    if (isExpired(link.expires_at)) return res.status(410).json({ message: 'Pay link has expired' });
+    if (link.expires_at && new Date(link.expires_at).getTime() < Date.now()) {
+      return res.status(410).json({ message: 'Pay link has expired' });
+    }
 
     return res.json(link);
   } catch (error) {
@@ -108,7 +104,9 @@ exports.initiatePayLinkPayment = async (req, res) => {
     const link = linkRes.rows[0];
 
     if (link.status !== 'active') return res.status(410).json({ message: 'Pay link is no longer active' });
-    if (isExpired(link.expires_at)) return res.status(410).json({ message: 'Pay link has expired' });
+    if (link.expires_at && new Date(link.expires_at).getTime() < Date.now()) {
+      return res.status(410).json({ message: 'Pay link has expired' });
+    }
     if (link.used_payment_id) {
       return res.status(409).json({ message: 'Pay link has already been used', payment_id: link.used_payment_id });
     }
@@ -209,4 +207,3 @@ exports.initiatePayLinkPayment = async (req, res) => {
     return res.status(500).json({ message: error.message || 'Failed to initiate payment' });
   }
 };
-

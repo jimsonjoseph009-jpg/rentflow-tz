@@ -98,11 +98,11 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <LandlordOnly>
+                <LandlordSubOnly>
                   <MainLayout>
                     <Dashboard />
                   </MainLayout>
-                </LandlordOnly>
+                </LandlordSubOnly>
               }
             />
             <Route

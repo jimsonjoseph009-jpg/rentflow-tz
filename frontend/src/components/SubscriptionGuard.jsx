@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../utils/axiosConfig';
+import {
+  hasSubscriptionAccess,
+  isGracePeriodSubscription,
+} from '../utils/subscription';
 
 /**
  * SubscriptionGuard — wraps protected pages.
@@ -46,11 +50,9 @@ export default function SubscriptionGuard({ children }) {
         if (cancelled) return;
 
         const sub = res.data;
-        const subStatus = String(sub?.status || '').toLowerCase();
 
-        // The backend handles expiry calculations now.
-        if (['active', 'trial', 'grace_period'].includes(subStatus)) {
-          setStatus(subStatus === 'grace_period' ? 'grace' : 'allowed');
+        if (hasSubscriptionAccess(sub)) {
+          setStatus(isGracePeriodSubscription(sub) ? 'grace' : 'allowed');
         } else {
           setStatus('blocked');
         }
@@ -207,7 +209,7 @@ export default function SubscriptionGuard({ children }) {
           </button>
 
           <p style={{ margin: '14px 0 0', fontSize: 12, color: '#475569' }}>
-            Plans start from 15,000 TZS/month
+            Visit billing to view your current plan options.
           </p>
         </div>
       </div>

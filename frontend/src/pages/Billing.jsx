@@ -2,6 +2,12 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import axios from '../utils/axiosConfig';
 import Navbar from '../components/Navbar';
 import { useNotification } from '../context/NotificationContext';
+import {
+  getSubscriptionStatus,
+  hasSubscriptionAccess,
+  isGracePeriodSubscription,
+  isTrialSubscription,
+} from '../utils/subscription';
 import '../styles/stream-layout.css';
 
 const PAYMENT_METHODS = [
@@ -17,6 +23,7 @@ const STATUS_COLORS = {
   success: '#22c55e',
   active: '#22c55e',
   trial: '#f59e0b',
+  grace_period: '#f97316',
   pending: '#f59e0b',
   failed: '#ef4444',
   cancelled: '#94a3b8',
@@ -270,7 +277,7 @@ export default function Billing() {
           axios.get('/subscribe/history', { headers }),
         ]);
 
-        const isActive = ['active', 'trial'].includes(String(st.data?.status || '').toLowerCase());
+        const isActive = hasSubscriptionAccess(st.data);
         const expired = st.data?.expires_at ? new Date(st.data.expires_at).getTime() < Date.now() : false;
         if (isActive && !expired) {
           setStatus(st.data);
@@ -317,10 +324,10 @@ export default function Billing() {
     }
   };
 
-  const isActive = status && ['active', 'trial'].includes(status.status) && (
-    !status.expires_at || new Date(status.expires_at).getTime() > Date.now()
-  );
-  const isTrialStatus = String(status?.status || '').toLowerCase() === 'trial';
+  const statusCode = getSubscriptionStatus(status);
+  const isActive = hasSubscriptionAccess(status);
+  const isTrialStatus = isTrialSubscription(status);
+  const isGracePeriod = isGracePeriodSubscription(status);
   const yearSaving = (plan) => {
     const saved = plan.price_monthly * 12 - plan.price_yearly;
     return saved > 0 ? Math.round((saved / (plan.price_monthly * 12)) * 100) : 0;
@@ -396,7 +403,7 @@ export default function Billing() {
                   textTransform: 'capitalize',
                 }}
               >
-                {status?.status || 'trial'}
+                {statusCode || 'inactive'}
               </span>
             </div>
             <p style={{ margin: 0, color: '#64748b', fontSize: 14 }}>
@@ -407,9 +414,14 @@ export default function Billing() {
                 You are currently using the Starter trial. Upgrade any time to continue after the trial period.
               </p>
             )}
+            {isGracePeriod && (
+              <p style={{ margin: '8px 0 0', color: '#f97316', fontSize: 13, fontWeight: 600 }}>
+                Your paid plan is in a 48-hour grace period. Renew now to avoid losing access.
+              </p>
+            )}
             {status?.expires_at && <DaysBar expiresAt={status.expires_at} />}
           </div>
-          {isActive && status?.status !== 'trial' && (
+          {isActive && !isTrialStatus && (
             <button
               onClick={handleCancel}
               disabled={cancelling}
@@ -466,8 +478,8 @@ export default function Billing() {
             : plans.map((plan) => {
                 const grad = PLAN_GRADIENTS[plan.code] || PLAN_GRADIENTS.starter;
                 const isRecommended = plan.code === PLAN_RECOMMENDED;
-                const isCurrent = plan.code === status?.plan_code && ['active', 'grace_period'].includes(String(status?.status || '').toLowerCase());
-                const isTrialPlan = plan.code === status?.plan_code && String(status?.status || '').toLowerCase() === 'trial';
+                const isCurrent = plan.code === status?.plan_code && isActive && !isTrialStatus;
+                const isTrialPlan = plan.code === status?.plan_code && isTrialStatus;
                 const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
                 const saving = yearSaving(plan);
 
