@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState(null);
   const [whatsAppSaving, setWhatsAppSaving] = useState(false);
+  const [mobileAnalyticsTab, setMobileAnalyticsTab] = useState('trend');
   const [stats, setStats] = useState({});
   const [insights, setInsights] = useState({ summary: {}, alerts: [] });
   const [properties, setProperties] = useState([]);
@@ -308,15 +309,112 @@ export default function Dashboard() {
     scrollMediaToIndex(nextIndex);
   };
 
+  const renderPropertyPanel = (className = 'rf-neo-panel') => (
+    <article className={className}>
+      <div className="rf-neo-panel-head">
+        <div>
+          <h3>Units by Property</h3>
+          <p>Top listings in your portfolio</p>
+        </div>
+      </div>
+      <div className="rf-neo-bars">
+        {propertyBars.map((item) => (
+          <div key={item.label} className="rf-neo-bar-row">
+            <div className="rf-neo-bar-label">
+              <strong>{item.label}</strong>
+              <span>{item.sublabel}</span>
+            </div>
+            <div className="rf-neo-bar-track">
+              <div
+                className="rf-neo-bar-fill"
+                style={{ width: `${Math.max((item.value / maxPropertyUnits) * 100, 8)}%` }}
+              />
+            </div>
+            <strong className="rf-neo-bar-value">{item.value}</strong>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+
+  const renderTrendPanel = (className = 'rf-neo-panel') => (
+    <article className={className}>
+      <div className="rf-neo-panel-head">
+        <div>
+          <h3>Collections Trend</h3>
+          <p>Recent payment movement</p>
+        </div>
+      </div>
+      <div className="rf-neo-line-chart">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <path className="rf-neo-line-glow" d={trendPath} pathLength="100" />
+          <path className="rf-neo-line-core" d={trendPath} pathLength="100" />
+        </svg>
+        <div className="rf-neo-line-labels">
+          {trendPoints.map((point) => (
+            <span key={point.label}>{point.label}</span>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+
+  const renderOccupancyPanel = (className = 'rf-neo-panel') => (
+    <article className={className}>
+      <div className="rf-neo-panel-head">
+        <div>
+          <h3>Occupancy Mix</h3>
+          <p>Live unit distribution</p>
+        </div>
+      </div>
+      <div className="rf-neo-donut-wrap">
+        <div
+          className="rf-neo-donut"
+          style={{
+            background: occupancySegments.length
+              ? `conic-gradient(${occupancySegments
+                  .map((segment, index) => {
+                    const start = occupancySegments.slice(0, index).reduce((sum, item) => sum + item.pct, 0);
+                    const end = start + segment.pct;
+                    return `${segment.color} ${start}% ${end}%`;
+                  })
+                  .join(', ')})`
+              : 'conic-gradient(#78f3e1 0% 100%)',
+          }}
+        >
+          <div className="rf-neo-donut-center">
+            <strong>{formatPercent(occupancyRate)}</strong>
+            <span>occupied</span>
+          </div>
+        </div>
+        <div className="rf-neo-legend">
+          {occupancySegments.map((segment) => (
+            <div key={segment.label} className="rf-neo-legend-item">
+              <span className="rf-neo-legend-dot" style={{ background: segment.color }} />
+              <div>
+                <strong>{segment.label}</strong>
+                <span>{segment.pct}% • {segment.value} units</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+
   return (
     <>
           <section className="rf-neo-main">
             <header className="rf-neo-topbar">
-              <div>
+              <div className="rf-neo-topbar-copy">
                 <p className="rf-neo-eyebrow">Landlord dashboard</p>
-                <h1>KPI Command Center</h1>
-                <span>
+                <h1 className="rf-hide-mobile">KPI Command Center</h1>
+                <h1 className="rf-show-mobile">Portfolio Snapshot</h1>
+                <span className="rf-hide-mobile">
                   Monitor rent collection, occupancy, tenant risk, and property performance from one place.
+                </span>
+                <span className="rf-show-mobile rf-neo-mobile-summary">
+                  Rent, alerts, and tenant activity in one clean mobile view.
                 </span>
               </div>
 
@@ -333,79 +431,6 @@ export default function Dashboard() {
               <div className="rf-empty rf-empty-neo">Loading dashboard metrics...</div>
             ) : (
               <>
-                <section className="rf-neo-panel" style={{ marginBottom: 16 }}>
-                  <div className="rf-neo-panel-head">
-                    <div>
-                      <h3>Featured Media & Ads</h3>
-                      <p>Auto-scrolling marketplace highlights from your public listings feed.</p>
-                    </div>
-                    {marketMedia.length > 1 ? (
-                      <div className="rf-neo-media-controls">
-                        <button className="rf-neo-media-btn" type="button" onClick={handlePrevMedia} aria-label="Previous media">
-                          ‹
-                        </button>
-                        <button className="rf-neo-media-btn" type="button" onClick={handleNextMedia} aria-label="Next media">
-                          ›
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
-                  <div
-                    className="rf-hero-media"
-                    ref={heroMediaRef}
-                    onMouseEnter={() => {
-                      heroPausedRef.current = true;
-                    }}
-                    onMouseLeave={() => {
-                      heroPausedRef.current = false;
-                    }}
-                    onFocusCapture={() => {
-                      heroPausedRef.current = true;
-                    }}
-                    onBlurCapture={() => {
-                      heroPausedRef.current = false;
-                    }}
-                  >
-                    {marketMedia.length === 0 ? (
-                      <div className="rf-hero-media-empty">No ad/property media yet. Add listings in Marketplace.</div>
-                    ) : (
-                      marketMedia.map((item) => (
-                        <article
-                          key={`hero-media-${item.id}`}
-                          className="rf-hero-media-card"
-                          onClick={() => setSelectedMedia(item)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {item.media_type === 'video' ? (
-                            <video muted playsInline autoPlay loop preload="metadata">
-                              <source src={item.media_url} />
-                            </video>
-                          ) : (
-                            <img src={item.media_url} alt={item.title || 'Listing media'} />
-                          )}
-                          <div className="rf-hero-media-caption">
-                            <strong>{item.title || 'Property Listing'}</strong>
-                            <span>{item.category || 'listing'} • {Number(item.price_tzs || 0).toLocaleString()} TZS</span>
-                          </div>
-                        </article>
-                      ))
-                    )}
-                  </div>
-                  {marketMedia.length > 1 ? (
-                    <div className="rf-neo-media-dots" aria-label="Media position">
-                      {marketMedia.map((item, index) => (
-                        <button
-                          key={`media-dot-${item.id}`}
-                          type="button"
-                          className={`rf-neo-media-dot ${index === activeMediaIndex ? 'active' : ''}`}
-                          onClick={() => scrollMediaToIndex(index)}
-                          aria-label={`Go to media ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  ) : null}
-                </section>
-
                 <div className="rf-kpi-carousel-wrapper">
                   <section className="rf-neo-kpi-grid">
                     {kpis.map((item) => (
@@ -418,145 +443,27 @@ export default function Dashboard() {
                   </section>
                 </div>
 
-                <section className="rf-neo-analytics-grid">
-                  <article className="rf-neo-panel">
-                    <div className="rf-neo-panel-head">
-                      <div>
-                        <h3>Units by Property</h3>
-                        <p>Top listings in your portfolio</p>
-                      </div>
+                <section className="rf-neo-panel rf-neo-priority-panel" style={{ marginBottom: 16 }}>
+                  <div className="rf-neo-panel-head">
+                    <div>
+                      <h3>Priority Alerts</h3>
+                      <p>What needs attention now</p>
                     </div>
-                    <div className="rf-neo-bars">
-                      {propertyBars.map((item) => (
-                        <div key={item.label} className="rf-neo-bar-row">
-                          <div className="rf-neo-bar-label">
-                            <strong>{item.label}</strong>
-                            <span>{item.sublabel}</span>
-                          </div>
-                          <div className="rf-neo-bar-track">
-                            <div
-                              className="rf-neo-bar-fill"
-                              style={{ width: `${Math.max((item.value / maxPropertyUnits) * 100, 8)}%` }}
-                            />
-                          </div>
-                          <strong className="rf-neo-bar-value">{item.value}</strong>
+                    <Link className="rf-neo-ghost-link rf-hide-mobile" to="/payments">Open Payments</Link>
+                  </div>
+                  <div className="rf-neo-alert-list">
+                    {criticalAlerts.length === 0 ? (
+                      <div className="rf-empty rf-empty-neo">No urgent alerts right now.</div>
+                    ) : (
+                      criticalAlerts.map((alert, index) => (
+                        <div key={`${alert.title}-${index}`} className="rf-neo-alert-card">
+                          <strong>{alert.title}</strong>
+                          <p>{alert.message}</p>
+                          <span>{alert.date ? new Date(alert.date).toLocaleString() : 'Live now'}</span>
                         </div>
-                      ))}
-                    </div>
-                  </article>
-
-                  <article className="rf-neo-panel">
-                    <div className="rf-neo-panel-head">
-                      <div>
-                        <h3>Collections Trend</h3>
-                        <p>Recent payment movement</p>
-                      </div>
-                    </div>
-                    <div className="rf-neo-line-chart">
-                      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                        <path className="rf-neo-line-glow" d={trendPath} pathLength="100" />
-                        <path className="rf-neo-line-core" d={trendPath} pathLength="100" />
-                      </svg>
-                      <div className="rf-neo-line-labels">
-                        {trendPoints.map((point) => (
-                          <span key={point.label}>{point.label}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </article>
-
-                  <article className="rf-neo-panel">
-                    <div className="rf-neo-panel-head">
-                      <div>
-                        <h3>Occupancy Mix</h3>
-                        <p>Live unit distribution</p>
-                      </div>
-                    </div>
-                    <div className="rf-neo-donut-wrap">
-                      <div
-                        className="rf-neo-donut"
-                        style={{
-                          background: occupancySegments.length
-                            ? `conic-gradient(${occupancySegments
-                                .map((segment, index) => {
-                                  const start = occupancySegments.slice(0, index).reduce((sum, item) => sum + item.pct, 0);
-                                  const end = start + segment.pct;
-                                  return `${segment.color} ${start}% ${end}%`;
-                                })
-                                .join(', ')})`
-                            : 'conic-gradient(#78f3e1 0% 100%)',
-                        }}
-                      >
-                        <div className="rf-neo-donut-center">
-                          <strong>{formatPercent(occupancyRate)}</strong>
-                          <span>occupied</span>
-                        </div>
-                      </div>
-                      <div className="rf-neo-legend">
-                        {occupancySegments.map((segment) => (
-                          <div key={segment.label} className="rf-neo-legend-item">
-                            <span className="rf-neo-legend-dot" style={{ background: segment.color }} />
-                            <div>
-                              <strong>{segment.label}</strong>
-                              <span>{segment.pct}% • {segment.value} units</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </article>
-                </section>
-
-                <section className="rf-neo-bottom-grid">
-                  <article className="rf-neo-panel">
-                    <div className="rf-neo-panel-head">
-                      <div>
-                        <h3>Payment Channels</h3>
-                        <p>Collection source mix</p>
-                      </div>
-                    </div>
-                    <div className="rf-neo-channel-list">
-                      {paymentMethodStats.map((item) => {
-                        const maxAmount = Math.max(...paymentMethodStats.map((entry) => entry.amount), 1);
-                        return (
-                          <div key={item.label} className="rf-neo-channel-row">
-                            <div className="rf-neo-channel-meta">
-                              <strong>{item.label}</strong>
-                              <span>{formatCurrency(item.amount)}</span>
-                            </div>
-                            <div className="rf-neo-channel-track">
-                              <div
-                                className="rf-neo-channel-fill"
-                                style={{ width: `${Math.max((item.amount / maxAmount) * 100, 10)}%` }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </article>
-
-                  <article className="rf-neo-panel">
-                    <div className="rf-neo-panel-head">
-                      <div>
-                        <h3>Priority Alerts</h3>
-                        <p>What needs attention now</p>
-                      </div>
-                    </div>
-                    <div className="rf-neo-alert-list">
-                      {criticalAlerts.length === 0 ? (
-                        <div className="rf-empty rf-empty-neo">No urgent alerts right now.</div>
-                      ) : (
-                        criticalAlerts.map((alert, index) => (
-                          <div key={`${alert.title}-${index}`} className="rf-neo-alert-card">
-                            <strong>{alert.title}</strong>
-                            <p>{alert.message}</p>
-                            <span>{alert.date ? new Date(alert.date).toLocaleString() : 'Live now'}</span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </article>
+                      ))
+                    )}
+                  </div>
                 </section>
 
                 <section className="rf-neo-panel rf-neo-table-panel">
@@ -624,6 +531,153 @@ export default function Dashboard() {
                       </div>
                     ))}
                   </div>
+                </section>
+
+                <section className="rf-show-mobile rf-neo-panel rf-neo-mobile-analytics-shell" style={{ marginTop: 16 }}>
+                  <div className="rf-neo-panel-head">
+                    <div>
+                      <h3>Performance Snapshot</h3>
+                      <p>Switch one insight at a time for a cleaner phone view.</p>
+                    </div>
+                  </div>
+                  <div className="rf-mobile-analytics-tabs" role="tablist" aria-label="Mobile analytics tabs">
+                    <button
+                      type="button"
+                      className={`rf-mobile-analytics-tab ${mobileAnalyticsTab === 'trend' ? 'active' : ''}`}
+                      onClick={() => setMobileAnalyticsTab('trend')}
+                    >
+                      Trend
+                    </button>
+                    <button
+                      type="button"
+                      className={`rf-mobile-analytics-tab ${mobileAnalyticsTab === 'units' ? 'active' : ''}`}
+                      onClick={() => setMobileAnalyticsTab('units')}
+                    >
+                      Units
+                    </button>
+                    <button
+                      type="button"
+                      className={`rf-mobile-analytics-tab ${mobileAnalyticsTab === 'occupancy' ? 'active' : ''}`}
+                      onClick={() => setMobileAnalyticsTab('occupancy')}
+                    >
+                      Occupancy
+                    </button>
+                  </div>
+                  <div className="rf-mobile-analytics-stage">
+                    {mobileAnalyticsTab === 'trend' ? renderTrendPanel('rf-neo-panel rf-neo-mobile-analytics-panel') : null}
+                    {mobileAnalyticsTab === 'units' ? renderPropertyPanel('rf-neo-panel rf-neo-mobile-analytics-panel') : null}
+                    {mobileAnalyticsTab === 'occupancy' ? renderOccupancyPanel('rf-neo-panel rf-neo-mobile-analytics-panel') : null}
+                  </div>
+                </section>
+
+                <section className="rf-neo-analytics-grid rf-hide-mobile" style={{ marginTop: 16 }}>
+                  {renderPropertyPanel()}
+                  {renderTrendPanel()}
+                  {renderOccupancyPanel()}
+                </section>
+
+                <section className="rf-neo-panel" style={{ marginBottom: 16 }}>
+                  <div className="rf-neo-panel-head">
+                    <div>
+                      <h3>Payment Channels</h3>
+                      <p>Collection source mix</p>
+                    </div>
+                  </div>
+                  <div className="rf-neo-channel-list">
+                    {paymentMethodStats.map((item) => {
+                      const maxAmount = Math.max(...paymentMethodStats.map((entry) => entry.amount), 1);
+                      return (
+                        <div key={item.label} className="rf-neo-channel-row">
+                          <div className="rf-neo-channel-meta">
+                            <strong>{item.label}</strong>
+                            <span>{formatCurrency(item.amount)}</span>
+                          </div>
+                          <div className="rf-neo-channel-track">
+                            <div
+                              className="rf-neo-channel-fill"
+                              style={{ width: `${Math.max((item.amount / maxAmount) * 100, 10)}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section className="rf-neo-panel rf-neo-marketplace-panel" style={{ marginBottom: 16 }}>
+                  <div className="rf-neo-panel-head">
+                    <div>
+                      <h3>Marketplace Preview</h3>
+                      <p>Quick look at your public listing media.</p>
+                    </div>
+                    <div className="rf-neo-top-actions">
+                      <Link className="rf-neo-ghost-link" to="/marketplace">Open Marketplace</Link>
+                      {marketMedia.length > 1 ? (
+                        <div className="rf-neo-media-controls">
+                          <button className="rf-neo-media-btn" type="button" onClick={handlePrevMedia} aria-label="Previous media">
+                            ‹
+                          </button>
+                          <button className="rf-neo-media-btn" type="button" onClick={handleNextMedia} aria-label="Next media">
+                            ›
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div
+                    className="rf-hero-media rf-hero-media-mobile-single"
+                    ref={heroMediaRef}
+                    onMouseEnter={() => {
+                      heroPausedRef.current = true;
+                    }}
+                    onMouseLeave={() => {
+                      heroPausedRef.current = false;
+                    }}
+                    onFocusCapture={() => {
+                      heroPausedRef.current = true;
+                    }}
+                    onBlurCapture={() => {
+                      heroPausedRef.current = false;
+                    }}
+                  >
+                    {marketMedia.length === 0 ? (
+                      <div className="rf-hero-media-empty">No ad/property media yet. Add listings in Marketplace.</div>
+                    ) : (
+                      marketMedia.map((item) => (
+                        <article
+                          key={`hero-media-${item.id}`}
+                          className="rf-hero-media-card"
+                          onClick={() => setSelectedMedia(item)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {item.media_type === 'video' ? (
+                            <video muted playsInline autoPlay loop preload="metadata">
+                              <source src={item.media_url} />
+                            </video>
+                          ) : (
+                            <img src={item.media_url} alt={item.title || 'Listing media'} />
+                          )}
+                          <div className="rf-hero-media-caption">
+                            <strong>{item.title || 'Property Listing'}</strong>
+                            <span>{item.category || 'listing'} • {Number(item.price_tzs || 0).toLocaleString()} TZS</span>
+                          </div>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                  {marketMedia.length > 1 ? (
+                    <div className="rf-neo-media-dots" aria-label="Media position">
+                      {marketMedia.map((item, index) => (
+                        <button
+                          key={`media-dot-${item.id}`}
+                          type="button"
+                          className={`rf-neo-media-dot ${index === activeMediaIndex ? 'active' : ''}`}
+                          onClick={() => scrollMediaToIndex(index)}
+                          aria-label={`Go to media ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
                 </section>
 
                 <section className="rf-neo-panel" style={{ marginTop: 16, marginBottom: 80 }}>

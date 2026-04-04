@@ -864,6 +864,11 @@
   margin-bottom: 22px;
 }
 
+.rf-neo-topbar-copy {
+  display: grid;
+  gap: 0;
+}
+
 .rf-neo-eyebrow {
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -886,6 +891,10 @@
   margin-top: 8px;
   color: rgba(209, 220, 247, 0.75);
   line-height: 1.55;
+}
+
+.rf-neo-mobile-summary {
+  max-width: 420px;
 }
 
 .rf-neo-top-actions {
@@ -1214,6 +1223,10 @@
   font-size: 13px;
 }
 
+.rf-neo-priority-panel .rf-neo-alert-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .rf-neo-table-panel {
   overflow: hidden;
 }
@@ -1222,6 +1235,48 @@
   border: 1px solid rgba(112, 133, 178, 0.18);
   color: #dbebff;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.rf-mobile-analytics-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.rf-mobile-analytics-tab {
+  appearance: none;
+  border: 1px solid rgba(112, 133, 178, 0.22);
+  background: rgba(15, 21, 38, 0.72);
+  color: rgba(216, 227, 255, 0.82);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.rf-mobile-analytics-tab:hover {
+  transform: none;
+  filter: none;
+}
+
+.rf-mobile-analytics-tab.active {
+  border-color: rgba(122, 243, 228, 0.48);
+  background: linear-gradient(120deg, rgba(122, 243, 228, 0.16), rgba(84, 95, 255, 0.18));
+  color: #effdff;
+}
+
+.rf-neo-mobile-analytics-panel {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.rf-neo-marketplace-panel .rf-neo-top-actions {
+  justify-content: flex-end;
 }
 
 .rf-neo-table-wrap {
@@ -1339,6 +1394,10 @@
 
   .rf-neo-line-labels {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rf-neo-priority-panel .rf-neo-alert-list {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2748,6 +2807,11 @@ html[data-theme='dark'] .rf-chat-messages {
     max-width: none;
   }
 
+  .rf-neo-mobile-summary {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
   .rf-neo-top-actions {
     width: 100%;
   }
@@ -2778,6 +2842,25 @@ html[data-theme='dark'] .rf-chat-messages {
 
   .rf-neo-media-controls,
   .rf-neo-media-dots {
+    display: none;
+  }
+
+  .rf-mobile-analytics-tabs {
+    gap: 8px;
+  }
+
+  .rf-mobile-analytics-tab {
+    min-width: 0;
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .rf-neo-marketplace-panel .rf-neo-top-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rf-hero-media-mobile-single .rf-hero-media-card:nth-child(n + 2) {
     display: none;
   }
 }
@@ -2945,5 +3028,9 @@ html[data-theme='dark'] .rf-chat-messages {
   .rf-card-body {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+
+  .rf-mobile-analytics-tabs {
+    grid-template-columns: 1fr;
   }
 }
