@@ -2672,14 +2672,14 @@ html[data-theme='dark'] .rf-chat-messages {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 72px;
-  background: rgba(8, 12, 24, 0.9);
+  height: 64px; /* Reduced from 72px */
+  background: rgba(8, 12, 24, 0.95);
   backdrop-filter: blur(25px);
   border-top: 1px solid rgba(112, 133, 178, 0.2);
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around; /* Better distribution */
   align-items: center;
-  padding: 0 4px 10px;
+  padding: 0 2px 4px; /* More compact padding */
   z-index: 2000;
 }
 
@@ -2698,17 +2698,20 @@ html[data-theme='dark'] .rf-chat-messages {
 }
 
 .rf-bottom-nav-icon {
-  font-size: 22px;
+  font-size: 20px; /* Reduced from 22px */
   line-height: 1;
   transition: transform 0.2s ease;
 }
 
 .rf-bottom-nav-label {
-  font-size: 10px;
+  font-size: 9px; /* Reduced from 10px */
   font-weight: 600;
   text-transform: capitalize;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
+  letter-spacing: 0.1px;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rf-bottom-nav-item.active {

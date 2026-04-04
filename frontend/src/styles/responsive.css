@@ -129,6 +129,19 @@
     width: 95% !important;
     max-width: 95% !important;
   }
+
+  /* Compact everything further for very small screens */
+  @media (max-width: 360px) {
+    body {
+      font-size: 13px !important;
+    }
+    .rf-page-title {
+      font-size: 22px !important;
+    }
+    .rf-stat-value {
+      font-size: 20px !important;
+    }
+  }
 }
 
 /* Landscape mode for phones */
