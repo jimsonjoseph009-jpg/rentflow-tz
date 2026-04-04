@@ -119,7 +119,7 @@ export default function Dashboard() {
   const occupiedUnits = Number(stats.occupied_units || 0);
   const vacantUnits = Number(stats.vacant_units || 0);
   const totalUnits = Math.max(Number(stats.total_units || 0), occupiedUnits + vacantUnits, 1);
-  const totalProperties = Number(stats.total_properties || properties.length || 0);
+
   const monthlyIncome = Number(stats.monthly_income || 0);
   const overdueBalance = Number(summary.collection_gap || 0);
   const occupancyRate = Number(summary.occupancy_rate || 0);
@@ -282,15 +282,7 @@ export default function Dashboard() {
     }));
   }, [payments, criticalAlerts]);
 
-  const sideLinks = [
-    { label: 'Dashboard', to: '/dashboard', icon: '⌘' },
-    { label: 'Properties', to: '/properties', icon: '▣' },
-    { label: 'Tenants', to: '/tenants', icon: '◉' },
-    { label: 'Payments', to: '/payments', icon: '◌' },
-    { label: 'Analytics', to: '/analytics', icon: '△' },
-    { label: 'Collections', to: '/collections-center', icon: '◈' },
-    { label: 'Settings', to: '/profile', icon: '⚙' },
-  ];
+
 
   const closeMediaModal = () => setSelectedMedia(null);
   const scrollMediaToIndex = (index) => {
