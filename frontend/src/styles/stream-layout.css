@@ -1302,8 +1302,29 @@
 @media (max-width: 860px) {
   .rf-neo-dashboard,
   .rf-neo-analytics-grid,
-  .rf-neo-bottom-grid,
-  .rf-neo-kpi-grid,
+  .rf-neo-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rf-neo-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .rf-neo-kpi-card {
+    min-height: 100px !important;
+    padding: 12px !important;
+  }
+
+  .rf-neo-kpi-card h2 {
+    font-size: 20px !important;
+    margin: 8px 0 4px !important;
+  }
+
+  .rf-neo-kpi-card p {
+    font-size: 11px !important;
+  }
+
   .rf-neo-bar-row {
     grid-template-columns: 1fr;
   }
@@ -2165,6 +2186,12 @@ html[data-theme='dark'] .rf-chat-messages {
   .rf-btn-select {
     min-width: 74px;
   }
+
+  /* Ensure rf-links-row becomes a grid hide-mobile is removed */
+  .rf-mobile-grid-wrapper {
+    display: block;
+    width: 100%;
+  }
 }
 
 /* Shared landlord workspace language */
@@ -2640,14 +2667,57 @@ html[data-theme='dark'] .rf-chat-messages {
     height: 46px;
   }
 
-  .rf-module-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
   .rf-module-link {
     padding: 14px;
     font-size: 15px;
+  }
+
+  /* Command Center Mobile Grid */
+  .rf-mobile-grid-nav {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px;
+    padding: 0 16px 20px;
+    margin-top: 10px;
+  }
+
+  .rf-mobile-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .rf-mobile-grid-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(120, 243, 225, 0.08);
+    border: 1px solid rgba(120, 243, 225, 0.2);
+    font-size: 20px;
+    color: #7af3e4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+  }
+
+  .rf-mobile-grid-item:active .rf-mobile-grid-icon {
+    transform: scale(0.92);
+    background: rgba(120, 243, 225, 0.15);
+  }
+
+  .rf-mobile-grid-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(162, 183, 228, 0.82);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

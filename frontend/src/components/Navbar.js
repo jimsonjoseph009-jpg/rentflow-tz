@@ -221,6 +221,20 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Command Center Quick-Links for Mobile */}
+          <div className="rf-mobile-grid-nav rf-show-mobile">
+            {quickLinks.map((item) => (
+              <Link 
+                key={item.path} 
+                to={item.path} 
+                className={`rf-mobile-grid-item ${location.pathname === item.path ? 'active' : ''}`}
+              >
+                <div className="rf-mobile-grid-icon">{item.icon}</div>
+                <span className="rf-mobile-grid-label">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+
           {showModules ? (
             <div className="rf-module-panel rf-reveal">
               <div className="rf-mobile-drawer-header rf-show-mobile">
