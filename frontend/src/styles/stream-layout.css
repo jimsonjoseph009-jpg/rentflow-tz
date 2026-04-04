@@ -2636,12 +2636,37 @@ html[data-theme='dark'] .rf-chat-messages {
 .rf-show-mobile { display: none !important; }
 
 @media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    overflow-x: hidden;
+  }
+
   .rf-shell,
+  .rf-navbar,
+  .rf-navbar-row,
+  .rf-navbar-tools,
+  .rf-navbar-actions,
+  .rf-content,
+  .rf-neo-page,
   .rf-neo-dashboard,
   .rf-neo-main,
   .rf-neo-panel,
-  .rf-neo-kpi-card {
+  .rf-neo-kpi-card,
+  .rf-mobile-grid-nav,
+  .rf-mobile-grid-item,
+  .rf-bottom-nav,
+  .rf-bottom-nav-item {
     min-width: 0;
+    max-width: 100%;
+  }
+
+  .rf-shell,
+  .rf-navbar,
+  .rf-content,
+  .rf-neo-dashboard,
+  .rf-neo-main {
+    overflow-x: hidden;
   }
 
   .rf-hide-mobile { display: none !important; }
@@ -2688,12 +2713,14 @@ html[data-theme='dark'] .rf-chat-messages {
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100vw;
+    width: auto;
+    max-width: 100%;
     height: calc(100vh - 64px);
     border-radius: 0;
     margin: 0;
     z-index: 1100;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 20px 16px 40px;
     background: #080c18;
   }
@@ -2746,6 +2773,7 @@ html[data-theme='dark'] .rf-chat-messages {
     gap: 12px;
     padding: 0 16px 20px;
     margin-top: 10px;
+    width: 100%;
   }
 
   .rf-mobile-grid-item {
@@ -2827,6 +2855,7 @@ html[data-theme='dark'] .rf-chat-messages {
     grid-template-columns: 1fr;
     overflow: visible;
     scroll-snap-type: none;
+    width: 100%;
   }
 
   .rf-hero-media-card {
@@ -3021,6 +3050,11 @@ html[data-theme='dark'] .rf-chat-messages {
 }
 
 @media (max-width: 420px) {
+  .rf-mobile-grid-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
   .rf-kpi-carousel-wrapper .rf-neo-kpi-grid {
     grid-template-columns: 1fr !important;
   }

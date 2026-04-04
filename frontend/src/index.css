@@ -55,10 +55,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: var(--app-bg);
   color: var(--app-text);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 code {
