@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
 import '../styles/stream-layout.css';
 
@@ -52,8 +51,7 @@ export default function Analytics() {
 
   return (
     <div className="rf-page">
-      <Navbar />
-
+      
       <div className="rf-page-content">
         <section className="rf-page-hero">
           <div>

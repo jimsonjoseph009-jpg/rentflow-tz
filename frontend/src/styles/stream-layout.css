@@ -699,7 +699,8 @@
 .rf-neo-page {
   max-width: 1440px;
   padding-top: 24px;
-  padding-bottom: 40px;
+  padding-bottom: 120px; /* Increased padding to ensure content clear BottomNav */
+  min-height: calc(100vh - 160px);
 }
 
 .rf-neo-dashboard {
@@ -848,7 +849,8 @@
   position: relative;
   border-radius: 28px;
   padding: 24px;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to allow content to expand and scroll */
+  min-height: 100%;
   border: 1px solid rgba(116, 132, 170, 0.18);
   background:
     linear-gradient(180deg, rgba(15, 18, 34, 0.98), rgba(10, 12, 24, 0.96)),

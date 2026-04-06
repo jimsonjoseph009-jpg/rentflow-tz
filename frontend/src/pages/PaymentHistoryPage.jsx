@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
 import { API_BASE } from '../config';
-import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
 import AppTable from '../components/ui/AppTable';
 import '../styles/stream-layout.css';
@@ -59,8 +58,7 @@ export default function PaymentHistoryPage() {
 
   return (
     <div className="rf-page">
-      <Navbar />
-      <div className="rf-page-content">
+            <div className="rf-page-content">
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Payments</p>

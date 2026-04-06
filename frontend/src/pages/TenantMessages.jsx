@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import '../styles/stream-layout.css';
 
 export default function TenantMessages() {
@@ -125,8 +124,7 @@ export default function TenantMessages() {
 
   return (
     <div className="rf-page">
-      <Navbar />
-      <main className="rf-page-content narrow">
+            <main className="rf-page-content narrow">
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Messages</p>

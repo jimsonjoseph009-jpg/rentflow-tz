@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import { useNotification } from '../context/NotificationContext';
 import '../styles/stream-layout.css';
 
@@ -58,8 +57,7 @@ export default function PaymentPage() {
 
   return (
     <div className="rf-shell">
-      <Navbar />
-      <main className="rf-content" style={{ maxWidth: 820 }}>
+            <main className="rf-content" style={{ maxWidth: 820 }}>
         <h2 style={{ marginBottom: '16px' }}>Pay Rent</h2>
         <p style={{ color: '#666', marginTop: 0 }}>Lipa kodi kupitia Fastlipa (M-Pesa, YAS/Tigo Pesa, Airtel Money, Halotel, NMB, CRDB).</p>
 

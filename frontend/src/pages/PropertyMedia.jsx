@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import { useTheme } from '../context/ThemeContext';
 import { useNotification } from '../context/NotificationContext';
 
@@ -133,8 +132,7 @@ export default function PropertyMedia() {
 
   return (
     <div style={{ minHeight: "100vh", background: bgColor }}>
-      <Navbar />
-      
+            
       <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
         <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "30px", color: textColor }}>
           📸 Property Media Gallery

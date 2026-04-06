@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import { useNotification } from '../context/NotificationContext';
 
 export default function EmergencyContacts() {
@@ -102,8 +101,7 @@ export default function EmergencyContacts() {
 
   return (
     <div className="rf-shell">
-      <Navbar />
-      <main className="rf-content">
+            <main className="rf-content">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h2 style={{ fontSize: "28px", fontWeight: "bold" }}>Emergency Contacts</h2>
           {isLandlord && (

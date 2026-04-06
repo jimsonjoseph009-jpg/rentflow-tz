@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 
 export default function OccupancyForecast() {
   const [forecast, setForecast] = useState([]);
@@ -40,8 +39,7 @@ export default function OccupancyForecast() {
 
   return (
     <div className="rf-shell">
-      <Navbar />
-      <main className="rf-content">
+            <main className="rf-content">
         <h2 style={{ fontSize: "28px", fontWeight: "bold", marginBottom: "20px" }}>Occupancy Forecast</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px", marginBottom: "30px" }}>

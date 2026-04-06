@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import AppCard from '../components/ui/AppCard';
 import AppModal from '../components/ui/AppModal';
 import AppTable from '../components/ui/AppTable';
@@ -109,8 +108,7 @@ export default function Maintenance() {
 
   return (
     <div className="rf-page">
-      <Navbar />
-
+      
       <div className="rf-page-content">
         <section className="rf-page-hero">
           <div>

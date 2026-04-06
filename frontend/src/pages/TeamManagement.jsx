@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import '../styles/stream-layout.css';
 
 const emptyForm = {
@@ -75,8 +74,7 @@ export default function TeamManagement() {
 
   return (
     <div className="rf-page">
-      <Navbar />
-      <main className="rf-page-content">
+            <main className="rf-page-content">
         <section className="rf-page-hero">
           <div>
             <p className="rf-page-eyebrow">Team</p>

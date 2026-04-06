@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
 import { useTheme } from '../context/ThemeContext';
 import axios from '../utils/axiosConfig';
 import { useNotification } from '../context/NotificationContext';
@@ -277,8 +276,7 @@ RentFlow-TZ Team`
 
   return (
     <div style={{ minHeight: "100vh", background: bgColor }}>
-      <Navbar />
-      
+            
       <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
         <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "10px", color: textColor }}>
           📧 Email Integration & Templates

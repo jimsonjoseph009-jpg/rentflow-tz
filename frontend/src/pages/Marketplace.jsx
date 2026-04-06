@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import '../styles/stream-layout.css';
 
 const emptyForm = {
@@ -105,7 +104,9 @@ export default function Marketplace() {
       if (err?.response?.status === 413) {
         setError('Media payload is too large. Use a smaller video/image file.');
       } else {
-        setError(err?.response?.data?.message || 'Failed to save listing');
+        const backendError = err?.response?.data?.error;
+        const msg = err?.response?.data?.message || 'Failed to save listing';
+        setError(backendError ? `${msg}: ${backendError}` : msg);
       }
     } finally {
       setSaving(false);
@@ -134,7 +135,9 @@ export default function Marketplace() {
       await axios.delete(`/marketplace/${id}`, { headers });
       await loadData();
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to delete listing');
+      const msg = err?.response?.data?.message || 'Failed to delete listing';
+      const backendError = err?.response?.data?.error;
+      setError(backendError ? `${msg}: ${backendError}` : msg);
     }
   };
 
@@ -162,7 +165,6 @@ export default function Marketplace() {
 
   return (
     <div className="rf-page">
-      <Navbar />
       <main className="rf-page-content">
         <section className="rf-page-hero">
           <div>

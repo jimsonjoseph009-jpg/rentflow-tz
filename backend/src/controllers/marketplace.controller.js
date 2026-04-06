@@ -91,8 +91,11 @@ exports.createListing = async (req, res) => {
 
     return res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).json({ message: 'Failed to create listing' });
+    console.error('[Marketplace Error]:', error.message);
+    return res.status(500).json({ 
+      message: 'Failed to create listing', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 };
 
@@ -154,8 +157,11 @@ exports.updateListing = async (req, res) => {
 
     return res.json(result.rows[0]);
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).json({ message: 'Failed to update listing' });
+    console.error('[Marketplace Update Error]:', error.message);
+    return res.status(500).json({ 
+      message: 'Failed to update listing', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 };
 
@@ -174,7 +180,10 @@ exports.deleteListing = async (req, res) => {
 
     return res.json({ message: 'Listing deleted' });
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).json({ message: 'Failed to delete listing' });
+    console.error('[Marketplace Delete Error]:', error.message);
+    return res.status(500).json({ 
+      message: 'Failed to delete listing', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 };
