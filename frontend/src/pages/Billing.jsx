@@ -468,7 +468,7 @@ export default function Billing() {
         </div>
 
         {/* Plan Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 40 }}>
+        <div className="rf-plan-cards-container">
           {loading
             ? [1, 2, 3].map((i) => (
                 <div key={i} style={{ height: 360, borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', animation: 'pulse 1.5s infinite' }} />
