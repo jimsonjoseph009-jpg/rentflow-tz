@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import axios from '../utils/axiosConfig';
-import Navbar from '../components/Navbar';
 import { useNotification } from '../context/NotificationContext';
 import {
   getSubscriptionStatus,
