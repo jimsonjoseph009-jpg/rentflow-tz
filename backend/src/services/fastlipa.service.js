@@ -18,19 +18,21 @@ const normalizeFastlipaMsisdn = (value) => {
   const raw = String(value || '').trim();
   if (!raw) throw new Error('Phone number is required');
 
-  // FastLipa docs examples use local TZ format (e.g. 0695123456).
-  // Accept a few common inputs and normalize.
-  const digits = raw.replace(/[^\d+]/g, '');
-  const strippedPlus = digits.startsWith('+') ? digits.slice(1) : digits;
-
-  if (strippedPlus.startsWith('255') && strippedPlus.length === 12) {
-    return `0${strippedPlus.slice(3)}`;
+  // FastLipa docs examples use local TZ format (e.g. 07XXXXXXXX or 06XXXXXXXX).
+  // Accept a few common inputs and normalize to 0XXXXXXXXX.
+  const digits = raw.replace(/[^\d]/g, '');
+  
+  if (digits.startsWith('255') && digits.length === 12) {
+    return `0${digits.slice(3)}`;
   }
-  if (strippedPlus.startsWith('0') && strippedPlus.length === 10) {
-    return strippedPlus;
+  if (digits.startsWith('0') && digits.length === 10) {
+    return digits;
+  }
+  if (digits.length === 9) {
+    return `0${digits}`;
   }
   // Fallback: keep digits as-is (some accounts may accept 2557XXXXXXXX)
-  return strippedPlus;
+  return digits;
 };
 
 const gatewayMethodAliases = (paymentMethod) => {
@@ -42,7 +44,7 @@ const gatewayMethodAliases = (paymentMethod) => {
       method: 'tigo_pesa',
       channel: 'tigo_pesa',
       network: 'TIGO',
-      provider: 'YAS',
+      provider: 'TIGO', // Changed from YAS to TIGO for standard push
     };
   }
 
@@ -51,8 +53,8 @@ const gatewayMethodAliases = (paymentMethod) => {
       payment_method: 'mpesa',
       method: 'mpesa',
       channel: 'mpesa',
-      network: 'MPESA',
-      provider: 'MPESA',
+      network: 'VODACOM', // Changed from MPESA to VODACOM
+      provider: 'VODACOM', // Changed from MPESA to VODACOM
     };
   }
 
@@ -121,18 +123,23 @@ const createPaymentRequest = async ({ amount, phone, paymentMethod, externalId, 
   }
 
   const normalizedAmount = normalizeAmount(amount);
+  const methodPayload = gatewayMethodAliases(paymentMethod);
   const payload = {
     number: normalizeFastlipaMsisdn(phone),
     amount: normalizedAmount,
     name: customerName || 'RentFlow User',
+    currency: process.env.FASTLIPA_CURRENCY || 'TZS',
+    external_id: externalId,
+    callback_url: callbackUrl,
+    order_type: 'push', // Added to explicitly request STK Push
+    ...methodPayload,
   };
 
   if (FASTLIPA_INCLUDE_METADATA) {
-    const methodPayload = gatewayMethodAliases(paymentMethod);
-    payload.currency = process.env.FASTLIPA_CURRENCY || 'TZS';
-    payload.external_id = externalId;
-    payload.callback_url = callbackUrl;
-    Object.assign(payload, methodPayload);
+    payload.metadata = {
+      success_url: successUrl,
+      failed_url: failedUrl,
+    };
   }
 
   const requestUrl = new URL(FASTLIPA_PAY_ENDPOINT, FASTLIPA_BASE_URL).toString();

@@ -9,6 +9,7 @@ export default function PublicPay() {
   const [loading, setLoading] = useState(true);
   const [linkInfo, setLinkInfo] = useState(null);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -48,11 +49,15 @@ export default function PublicPay() {
     event.preventDefault();
     setSubmitting(true);
     setError('');
+    setNotice('');
     try {
       const res = await axios.post(`/public/paylinks/${token}/initiate`, form);
       const paymentUrl = res.data?.payment_url;
-      if (!paymentUrl) throw new Error('No payment URL returned');
-      window.location.href = paymentUrl;
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+        return;
+      }
+      setNotice('Payment initiated. Check your phone to confirm the STK push.');
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to start payment');
     } finally {
@@ -84,6 +89,11 @@ export default function PublicPay() {
             <div className="rf-empty rf-empty-danger">{error}</div>
           ) : (
             <>
+              {notice ? (
+                <div className="rf-empty" style={{ marginBottom: 16 }}>
+                  {notice}
+                </div>
+              ) : null}
               <div className="rf-section-head">
                 <div>
                   <h3>Invoice</h3>

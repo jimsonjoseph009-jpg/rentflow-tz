@@ -43,11 +43,12 @@ export default function PaymentPage() {
       });
 
       const paymentUrl = response.data?.payment_url;
-      if (!paymentUrl) {
-        throw new Error('No payment URL returned by server');
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+        return;
       }
 
-      window.location.href = paymentUrl;
+      notify.success('Pay Rent', 'Payment initiated. Check your phone to confirm the STK push.');
     } catch (error) {
       notify.error('Pay Rent', error.response?.data?.message || error.message || 'Payment initialization failed');
     } finally {
