@@ -2669,6 +2669,10 @@ html[data-theme='dark'] .rf-chat-messages {
     overflow-x: hidden;
   }
 
+  .rf-neo-dashboard {
+    grid-template-columns: 1fr !important;
+  }
+
   .rf-hide-mobile { display: none !important; }
   .rf-show-mobile { 
      display: block !important; 

@@ -335,7 +335,6 @@ export default function Billing() {
 
   return (
     <div className="rf-page">
-      <Navbar />
       <div className="rf-page-content">
         <section className="rf-page-hero">
           <div>
