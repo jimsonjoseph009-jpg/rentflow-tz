@@ -31,13 +31,54 @@ exports.getPlans = async (_req, res) => {
       plansRes = await pool.query('SELECT * FROM plans WHERE is_active=true ORDER BY id');
     }
 
-    // Safely attempt to create plan_features table and query features
+    // Safely attempt to create remaining saas_monetization tables so that /subscription-status doesn't crash on Vercel
     await pool.query(`
       CREATE TABLE IF NOT EXISTS plan_features (
         id SERIAL PRIMARY KEY,
         plan_id INT NOT NULL REFERENCES plans(id) ON DELETE CASCADE,
         feature_key VARCHAR(100) NOT NULL,
         feature_name VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id SERIAL PRIMARY KEY,
+        user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        plan_id INT NOT NULL REFERENCES plans(id) ON DELETE RESTRICT,
+        billing_cycle VARCHAR(20) NOT NULL CHECK (billing_cycle IN ('monthly','yearly')),
+        amount DECIMAL(12,2) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','active','expired','trial','cancelled')),
+        starts_at TIMESTAMP,
+        ends_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS user_subscriptions (
+        id SERIAL PRIMARY KEY,
+        user_id INT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        plan_id INT REFERENCES plans(id) ON DELETE SET NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'trial' CHECK (status IN ('active','expired','trial','cancelled')),
+        billing_cycle VARCHAR(20) CHECK (billing_cycle IN ('monthly','yearly')),
+        started_at TIMESTAMP,
+        expires_at TIMESTAMP,
+        cancelled_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS billing_history (
+        id SERIAL PRIMARY KEY,
+        user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        subscription_id INT REFERENCES subscriptions(id) ON DELETE SET NULL,
+        billing_type VARCHAR(30) NOT NULL CHECK (billing_type IN ('subscription','transaction_fee','sms_topup')),
+        amount DECIMAL(12,2) NOT NULL,
+        currency VARCHAR(10) NOT NULL DEFAULT 'TZS',
+        payment_method VARCHAR(50),
+        transaction_id VARCHAR(120),
+        gateway_reference VARCHAR(120),
+        status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','success','failed','cancelled')),
+        payment_url TEXT,
+        metadata JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
