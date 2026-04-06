@@ -1,3 +1,18 @@
+/* Global Scroll Force Fix - Ensures all modules remain scrollable on mobile/desktop */
+html, body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+#root, .rf-shell, .rf-shell-neo, .rf-neo-dashboard {
+  overflow-y: visible !important;
+  overflow-x: clip !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
 .rf-shell {
   min-height: 100vh;
   background: var(--rf-shell-bg, var(--rf-bg));
